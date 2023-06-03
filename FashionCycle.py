@@ -9,133 +9,202 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (QMainWindow, QApplication, QFileDialog, QAction,QMessageBox)
-from PyQt5.QtGui import (QImage, QPainter, QPen)
-from PyQt5.QtCore import (Qt, QPoint)
 import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
+from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
+from PyQt5.QtCore import Qt
+import requests
+import json
+from PyQt5.QtGui import QPixmap
+from PIL import Image
+from io import BytesIO
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1800, 1000)
-        
+       
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         
-        self.canvas = QtWidgets.QGraphicsView(self.centralwidget)
-        self.canvas.setGeometry(QtCore.QRect(0, 0, 1800, 1000))
-        self.canvas.setObjectName("canvas")
+        # Create a vertical layout for the central widget
+        self.layout = QVBoxLayout(self.centralwidget)
+
+        # Create a canvas widget for drawing
+        self.canvas = CanvasWidget()
+        self.layout.addWidget(self.canvas)
+
+        # Set the main layout
+        self.centralwidget.setLayout(self.layout)
         
         
         self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1310, 910, 101, 28))
         self.bookMarkSendFromCanvas.setStyleSheet("")
         self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
         
+        #the dial used to change the thickness of the brush
         self.PixelThicknessDialForPallete = QtWidgets.QDial(self.centralwidget)
         self.PixelThicknessDialForPallete.setGeometry(QtCore.QRect(950, 810, 151, 191))
         self.PixelThicknessDialForPallete.setObjectName("PixelThicknessDialForPallete")
         
+        #the display that showed the pixel thickness of the brush
         self.PixelThicknessValueForPallete = QtWidgets.QLCDNumber(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.PixelThicknessValueForPallete.setStyleSheet("background-color: {}".format(color.name()))
         self.PixelThicknessValueForPallete.setGeometry(QtCore.QRect(840, 880, 111, 61))
         self.PixelThicknessValueForPallete.setStyleSheet("border: 1px solid black;")
         self.PixelThicknessValueForPallete.setObjectName("PixelThicknessValueForPallete")
         
+        #the pop up tab that holds anything related to the chat box AI of stable diffusion
         self.chatBox = QtWidgets.QGroupBox(self.centralwidget)
         self.chatBox.setGeometry(QtCore.QRect(10, 10, 401, 951))
-        self.chatBox.setStyleSheet("border: 1px solid black;")
+        color = QColor(102, 255, 255)
+        self.chatBox.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.chatBox.setTitle("")
         self.chatBox.setFlat(True)
         self.chatBox.setObjectName("chatBox")
         
+        #the chat Message History holds all the text that shows all the image and the User's input
         self.chatMessageHistory = QtWidgets.QTextBrowser(self.chatBox)
         self.chatMessageHistory.setGeometry(QtCore.QRect(10, 30, 371, 871))
         self.chatMessageHistory.setMinimumSize(QtCore.QSize(311, 681))
-        self.chatMessageHistory.setAutoFillBackground(False)
+        self.chatMessageHistory.setAutoFillBackground(True)
+        color = QColor(255, 255, 255)
+        self.chatMessageHistory.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessageHistory.setObjectName("chatMessageHistory")
         
+        #the button that sends the specific image in displayed will be sent to the book mark tab
         self.bookMarkSend = QtWidgets.QPushButton(self.chatBox)
+        color = QColor(255, 255, 255)
+        self.bookMarkSend.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSend.setGeometry(QtCore.QRect(330, 910, 41, 28))
         self.bookMarkSend.setObjectName("bookMarkSend")
         
+        #the textbox that holds the user input to be sent into the chat message history
         self.chatMessage = QtWidgets.QTextEdit(self.chatBox)
+        color = QColor(255, 255, 255)
+        self.chatMessage.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessage.setGeometry(QtCore.QRect(10, 910, 261, 31))
         self.chatMessage.setObjectName("chatMessage")
         
+        #the button that sends the chat message to the chat message history
         self.chatMessageSend = QtWidgets.QPushButton(self.chatBox)
+        color = QColor(255, 255, 255)
+        self.chatMessageSend.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessageSend.setGeometry(QtCore.QRect(280, 910, 41, 28))
         self.chatMessageSend.setObjectName("chatMessageSend")
         
+        #the button that closes the chat box tab
         self.closeChatboxButton = QtWidgets.QPushButton(self.chatBox)
-        self.closeChatboxButton.setGeometry(QtCore.QRect(0, 0, 93, 28))
         self.closeChatboxButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
+        self.closeChatboxButton.setGeometry(QtCore.QRect(0, 0, 93, 28))
         self.closeChatboxButton.setObjectName("closeChatboxButton")
         
+        #the pop up tab that holds anything related to the book mark or favorite
         self.bookMark = QtWidgets.QGroupBox(self.centralwidget)
         self.bookMark.setGeometry(QtCore.QRect(410, 10, 1021, 211))
         self.bookMark.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.bookMark.setStyleSheet("border: 1px solid black;")
+        color = QColor(255, 255, 150)
+        self.bookMark.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.bookMark.setTitle("")
         self.bookMark.setFlat(True)
         self.bookMark.setObjectName("bookMark")
         
+        #the tab list that would show the images in a list
         self.bookMarkLIstOfImages = QtWidgets.QComboBox(self.bookMark)
+        color = QColor(255, 255, 255)
+        self.bookMarkLIstOfImages.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(260, 80, 531, 31))
         self.bookMarkLIstOfImages.setObjectName("bookMarkLIstOfImages")
         self.bookMarkLIstOfImages.addItem("")
         self.bookMarkLIstOfImages.addItem("")
         self.bookMarkLIstOfImages.addItem("")
         
-        self.bookMarkSendFromControlNet_2 = QtWidgets.QPushButton(self.bookMark)
-        self.bookMarkSendFromControlNet_2.setGeometry(QtCore.QRect(950, 180, 51, 28))
-        self.bookMarkSendFromControlNet_2.setObjectName("bookMarkSendFromControlNet_2")
+        #the button that would send the selected image from control net to book mark
+        self.bookMarkDisplayOnCanvas = QtWidgets.QPushButton(self.bookMark)
+        color = QColor(255, 255, 255)
+        self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
+        self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(950, 180, 51, 28))
+        self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
         
+        #the button that closes the book mark tab
         self.closeBookMarkButton = QtWidgets.QPushButton(self.bookMark)
+        color = QColor(255, 0, 0)
+        self.closeBookMarkButton.setStyleSheet("background-color: {}".format(color.name()))
         self.closeBookMarkButton.setGeometry(QtCore.QRect(10, 0, 93, 28))
         self.closeBookMarkButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeBookMarkButton.setObjectName("closeBookMarkButton")
         
+        #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
         self.controlNet.setGeometry(QtCore.QRect(1430, 10, 371, 931))
-        self.controlNet.setStyleSheet("border: 1px solid black;")
+        color = QColor(0, 255, 0)
+        self.controlNet.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.controlNet.setTitle("")
         self.controlNet.setFlat(True)
         self.controlNet.setObjectName("controlNet")
         
+        #the button that would send the selected image from book mark to control net
         self.bookMarkSendFromControlNet = QtWidgets.QPushButton(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.bookMarkSendFromControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSendFromControlNet.setGeometry(QtCore.QRect(140, 880, 101, 28))
         self.bookMarkSendFromControlNet.setObjectName("bookMarkSendFromControlNet")
         
+        #the text that would hold the information to be sent to control net
         self.controlNetPromptInput = QtWidgets.QTextEdit(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetPromptInput.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetPromptInput.setGeometry(QtCore.QRect(30, 120, 211, 31))
         self.controlNetPromptInput.setObjectName("controlNetPromptInput")
         
+        #the slider that can be moved from 0 to 99 for the amount of control to control net
         self.controlNetSlider = QtWidgets.QSlider(self.controlNet)
         self.controlNetSlider.setGeometry(QtCore.QRect(120, 80, 160, 22))
+        color = QColor(255, 255, 255)
+        self.controlNetSlider.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSlider.setOrientation(QtCore.Qt.Horizontal)
         self.controlNetSlider.setObjectName("controlNetSlider")
         
+        #the value that is shown for the user to know how much control in control net
         self.controlNetValue = QtWidgets.QLCDNumber(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetValue.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetValue.setGeometry(QtCore.QRect(120, 30, 161, 41))
         self.controlNetValue.setObjectName("controlNetValue")
         
+        #the list that holds all the images from the output of control net
         self.controlNetImageList = QtWidgets.QListView(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetImageList.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetImageList.setGeometry(QtCore.QRect(30, 210, 311, 621))
         self.controlNetImageList.setObjectName("controlNetImageList")
         
+        #the button that would sent the prompt and the control value to the control net API
         self.controlNetSendPrompt = QtWidgets.QPushButton(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetSendPrompt.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSendPrompt.setGeometry(QtCore.QRect(250, 120, 101, 28))
         self.controlNetSendPrompt.setStyleSheet("")
         self.controlNetSendPrompt.setObjectName("controlNetSendPrompt")
         
+        #the list that would show which choice for the control net to recieve from the book mark
         self.bookMarkSelectionToSendControlNet = QtWidgets.QComboBox(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.bookMarkSelectionToSendControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSelectionToSendControlNet.setGeometry(QtCore.QRect(30, 160, 211, 31))
         self.bookMarkSelectionToSendControlNet.setObjectName("bookMarkSelectionToSendControlNet")
         self.bookMarkSelectionToSendControlNet.addItem("")
         self.bookMarkSelectionToSendControlNet.addItem("")
         self.bookMarkSelectionToSendControlNet.addItem("")
         
+        #the list that would show which choice for the book mark to recieve from control net
         self.controlNetSelectionToSendBookMark = QtWidgets.QComboBox(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetSelectionToSendBookMark.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSelectionToSendBookMark.setGeometry(QtCore.QRect(30, 850, 311, 22))
         self.controlNetSelectionToSendBookMark.setObjectName("controlNetSelectionToSendBookMark")
         self.controlNetSelectionToSendBookMark.addItem("")
@@ -143,22 +212,34 @@ class Ui_MainWindow(object):
         self.controlNetSelectionToSendBookMark.addItem("")
         self.controlNetSelectionToSendBookMark.addItem("")
         
+        #the button that close the control net tab
         self.closeControlNetButton = QtWidgets.QPushButton(self.controlNet)
+        color = QColor(255, 0, 0)
+        self.closeControlNetButton.setStyleSheet("background-color: {}".format(color.name()))
         self.closeControlNetButton.setGeometry(QtCore.QRect(10, 0, 93, 28))
         self.closeControlNetButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeControlNetButton.setObjectName("closeControlNetButton")
         
+        #the button that would open the chat box tab
         self.ChatbotTab = QtWidgets.QPushButton(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.ChatbotTab.setStyleSheet("background-color: {}".format(color.name()))
         self.ChatbotTab.setGeometry(QtCore.QRect(0, 460, 93, 28))
         self.ChatbotTab.setObjectName("ChatbotTab")
         self.ChatbotTab.setVisible(False)
         
+        #the button that would open the book mark tab
         self.BookmarkTab = QtWidgets.QPushButton(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.BookmarkTab.setStyleSheet("background-color: {}".format(color.name()))
         self.BookmarkTab.setGeometry(QtCore.QRect(870, 20, 93, 28))
         self.BookmarkTab.setObjectName("BookmarkTab")
         self.BookmarkTab.setVisible(False)
         
+        #the button that would open the control net tab
         self.ControlNet = QtWidgets.QPushButton(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.ControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.ControlNet.setGeometry(QtCore.QRect(1710, 460, 93, 28))
         self.ControlNet.setInputMethodHints(QtCore.Qt.ImhHiddenText)
         self.ControlNet.setObjectName("ControlNet")
@@ -196,6 +277,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         
         MainWindow.setStatusBar(self.statusbar)
+        
     #untouched generated code starts here
         self.retranslateUi(MainWindow)
         self.controlNetSlider.sliderMoved['int'].connect(self.controlNetValue.display) # type: ignore
@@ -215,6 +297,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
     #untouched generated code ends here
         self.chatMessageSend.clicked.connect(self.send_message_to_Chatbot)
+        self.controlNetSendPrompt.clicked.connect(self.send_prompt_to_ControlNet)
     #untouched generated code starts here
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -231,7 +314,7 @@ class Ui_MainWindow(object):
         self.bookMarkLIstOfImages.setItemText(0, _translate("MainWindow", "Nice"))
         self.bookMarkLIstOfImages.setItemText(1, _translate("MainWindow", "NotNice"))
         self.bookMarkLIstOfImages.setItemText(2, _translate("MainWindow", "Comething"))
-        self.bookMarkSendFromControlNet_2.setText(_translate("MainWindow", "Display"))
+        self.bookMarkDisplayOnCanvas.setText(_translate("MainWindow", "Display"))
         self.closeBookMarkButton.setText(_translate("MainWindow", "Close"))
         self.bookMarkSendFromControlNet.setText(_translate("MainWindow", "Book Mark"))
         self.controlNetSendPrompt.setText(_translate("MainWindow", "Send"))
@@ -248,11 +331,60 @@ class Ui_MainWindow(object):
         self.ControlNet.setText(_translate("MainWindow", "ControlNet"))
     #untouched generated code ends here
     def send_message_to_Chatbot(self):
-        print(chatMessage)
-        message = chatMessage.toPlainText()
+        message = self.chatMessage.toPlainText()
         self.chatMessage.clear()
         self.chatMessageHistory.append(f"User: {message}")
-    
+        response = self.generate_chatbot_response(message)
+        print(response)
+        self.chatMessageHistory.append(f"ChatBot: {response}")
+    def send_prompt_to_ControlNet(self):
+        message = self.controlNetPromptInput.toPlainText()
+        self.controlNetPromptInput.clear()
+        value = str(self.controlNetValue.value())
+        print(message + " " + value)
+    def generate_chatbot_response(self, message):
+        if "cat" in message.lower():
+            response = self.get_cat_image()
+            pixmap = QtGui.QPixmap.fromImage(response)
+            return pixmap
+        else:
+            return "I'm sorry, I can only provide cat images. Please ask for a cat!"
+    def get_cat_image(self):
+        url = "https://api.thecatapi.com/v1/images/search"
+        response = requests.get(url)
+        image = QtGui.QImage.fromData(response.content)
+        return image
+class CanvasWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setMouseTracking(True)
+        self.path = QPainterPath()
+        self.pen = QPen(Qt.black, 2)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(self.pen)
+        painter.drawPath(self.path)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.path.moveTo(event.pos())
+            self.update()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() & Qt.LeftButton:
+            self.path.lineTo(event.pos())
+            self.update()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.path.lineTo(event.pos())
+            self.update()
+
+    def clear(self):
+        self.path = QPainterPath()
+        self.update()
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
