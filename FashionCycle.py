@@ -22,7 +22,7 @@ import os, io
 import config
 
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
-headers = {"Authorization": f"Bearer {huggingface_api_key}"}
+headers = {"Authorization": f"Bearer {config.huggingface_api_key}"}
 os.makedirs('chatbot_responses', exist_ok=True)
 
 erase = "no"
