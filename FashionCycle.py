@@ -9,30 +9,21 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QListView
+from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap
+from PyQt5.QtCore import Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
-from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
-from PyQt5.QtCore import Qt, QPoint, QRect
 import requests
 import json
-from PyQt5.QtGui import QImage, QPixmap
 from PIL import Image
 from io import BytesIO
-import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
-from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt5.QtCore import QUrl, QByteArray
-import json
-import requests
-import io
-from PIL import Image
-from PyQt5.QtWidgets import QApplication, QListView, QWidget, QVBoxLayout
-from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex
-from PyQt5.QtGui import QPixmap
-API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
-api_key = "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"
-headers = {"Authorization": f"Bearer {api_key}"}
+import os, io
+import config
 
+API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
+headers = {"Authorization": f"Bearer {huggingface_api_key}"}
+os.makedirs('chatbot_responses', exist_ok=True)
 
 erase = "no"
 class Ui_MainWindow(object):
@@ -365,7 +356,7 @@ class Ui_MainWindow(object):
         self.Erasing.clicked.connect(self.eraserMode_change_text)
         self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
         self.canvas.add_image("response2.png")
-        image_paths = ['response2.png','cat.png']
+        image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
         image_model = ImageListModel(image_paths)
         self.chatImageResponseDisplay.setModel(image_model)
         #untouched generated code starts here
@@ -417,6 +408,7 @@ class Ui_MainWindow(object):
         # print(response)
         # print(self.PixelThicknessSliderForPallete.sliderPosition())
         self.chatMessageHistory.append(f"ChatBot: {response}")
+
     def send_prompt_to_ControlNet(self):
         message = self.controlNetPromptInput.toPlainText()
         self.controlNetPromptInput.clear()
@@ -428,7 +420,10 @@ class Ui_MainWindow(object):
         data = self.query("a full body, uncropped, head to toe photo of a single model wearing a "+ clothing_description + ", facing the camera, simple background")
         stream = io.BytesIO(data.content)
         img = Image.open(stream)
-        img.save(message + ".png")
+        img.save('./chatbot_responses/' + message + ".jpg")
+        image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
+        image_model = ImageListModel(image_paths)
+        self.chatImageResponseDisplay.setModel(image_model)
     def query(self,payload):
         data = json.dumps(payload)
         response = requests.request("POST", API_URL, headers=headers, data=data)
@@ -458,7 +453,7 @@ class ImageListModel(QAbstractListModel):
             return self.image_paths[index.row()]
 
         if role == Qt.DecorationRole:
-            pixmap = QPixmap(self.image_paths[index.row()])
+            pixmap = QPixmap(os.path.join('./chatbot_responses',self.image_paths[index.row()]))
             return pixmap.scaledToHeight(100)
 
         return None
