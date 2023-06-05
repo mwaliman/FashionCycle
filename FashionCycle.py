@@ -12,20 +12,36 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPoint, QRect
 import requests
 import json
 from PyQt5.QtGui import QPixmap
 from PIL import Image
 from io import BytesIO
+import sys
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PyQt5.QtCore import QUrl, QByteArray
+import json
+import requests
+import io
+from PIL import Image
+API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
+api_key = "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"
+headers = {"Authorization": f"Bearer {api_key}"}
 
+
+erase = "no"
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1800, 1000)
-       
+        
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        color = QColor(255, 255, 255)
+        self.centralwidget.setStyleSheet("background-color: {}".format(color.name()))
+        
         
         # Create a vertical layout for the central widget
         self.layout = QVBoxLayout(self.centralwidget)
@@ -37,7 +53,7 @@ class Ui_MainWindow(object):
         # Set the main layout
         self.centralwidget.setLayout(self.layout)
         
-        
+        #the button that sends the image from bookmark to canvas
         self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
         color = QColor(255, 255, 255)
         self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
@@ -45,16 +61,12 @@ class Ui_MainWindow(object):
         self.bookMarkSendFromCanvas.setStyleSheet("")
         self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
         
-        #the dial used to change the thickness of the brush
-        self.PixelThicknessDialForPallete = QtWidgets.QDial(self.centralwidget)
-        self.PixelThicknessDialForPallete.setGeometry(QtCore.QRect(950, 810, 151, 191))
-        self.PixelThicknessDialForPallete.setObjectName("PixelThicknessDialForPallete")
-        
         #the display that showed the pixel thickness of the brush
         self.PixelThicknessValueForPallete = QtWidgets.QLCDNumber(self.centralwidget)
+        self.PixelThicknessValueForPallete.display(1)
         color = QColor(255, 255, 255)
         self.PixelThicknessValueForPallete.setStyleSheet("background-color: {}".format(color.name()))
-        self.PixelThicknessValueForPallete.setGeometry(QtCore.QRect(840, 880, 111, 61))
+        self.PixelThicknessValueForPallete.setGeometry(QtCore.QRect(810, 890, 111, 61))
         self.PixelThicknessValueForPallete.setStyleSheet("border: 1px solid black;")
         self.PixelThicknessValueForPallete.setObjectName("PixelThicknessValueForPallete")
         
@@ -69,9 +81,9 @@ class Ui_MainWindow(object):
         
         #the chat Message History holds all the text that shows all the image and the User's input
         self.chatMessageHistory = QtWidgets.QTextBrowser(self.chatBox)
-        self.chatMessageHistory.setGeometry(QtCore.QRect(10, 30, 371, 871))
-        self.chatMessageHistory.setMinimumSize(QtCore.QSize(311, 681))
-        self.chatMessageHistory.setAutoFillBackground(True)
+        self.chatMessageHistory.setGeometry(QtCore.QRect(10, 30, 371, 450))
+        self.chatMessageHistory.setMinimumSize(QtCore.QSize(311, 450))
+        self.chatMessageHistory.setAutoFillBackground(False)
         color = QColor(255, 255, 255)
         self.chatMessageHistory.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessageHistory.setObjectName("chatMessageHistory")
@@ -117,18 +129,18 @@ class Ui_MainWindow(object):
         self.bookMarkLIstOfImages = QtWidgets.QComboBox(self.bookMark)
         color = QColor(255, 255, 255)
         self.bookMarkLIstOfImages.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(260, 80, 531, 31))
+        self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(360, 80, 531, 31))
         self.bookMarkLIstOfImages.setObjectName("bookMarkLIstOfImages")
         self.bookMarkLIstOfImages.addItem("")
         self.bookMarkLIstOfImages.addItem("")
         self.bookMarkLIstOfImages.addItem("")
         
         #the button that would send the selected image from control net to book mark
-        self.bookMarkDisplayOnCanvas = QtWidgets.QPushButton(self.bookMark)
+        self.bookMarkDisplayOnCanvasButton = QtWidgets.QPushButton(self.bookMark)
         color = QColor(255, 255, 255)
-        self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(950, 180, 51, 28))
-        self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
+        self.bookMarkDisplayOnCanvasButton.setStyleSheet("background-color: {}".format(color.name()))
+        self.bookMarkDisplayOnCanvasButton.setGeometry(QtCore.QRect(950, 180, 51, 28))
+        self.bookMarkDisplayOnCanvasButton.setObjectName("bookMarkDisplayOnCanvasButton")
         
         #the button that closes the book mark tab
         self.closeBookMarkButton = QtWidgets.QPushButton(self.bookMark)
@@ -137,6 +149,13 @@ class Ui_MainWindow(object):
         self.closeBookMarkButton.setGeometry(QtCore.QRect(10, 0, 93, 28))
         self.closeBookMarkButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeBookMarkButton.setObjectName("closeBookMarkButton")
+        
+        #the display for the recent inputed image
+        self.bookMarkDisplayOnCanvas = QtWidgets.QListView(self.bookMark)
+        color = QColor(255, 255, 255)
+        self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
+        self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(120, 30, 171, 161))
+        self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
         
         #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
@@ -180,7 +199,7 @@ class Ui_MainWindow(object):
         self.controlNetImageList = QtWidgets.QListView(self.controlNet)
         color = QColor(255, 255, 255)
         self.controlNetImageList.setStyleSheet("background-color: {}".format(color.name()))
-        self.controlNetImageList.setGeometry(QtCore.QRect(30, 210, 311, 621))
+        self.controlNetImageList.setGeometry(QtCore.QRect(30, 400, 311, 440))
         self.controlNetImageList.setObjectName("controlNetImageList")
         
         #the button that would sent the prompt and the control value to the control net API
@@ -220,6 +239,13 @@ class Ui_MainWindow(object):
         self.closeControlNetButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeControlNetButton.setObjectName("closeControlNetButton")
         
+        #the image that is displayed in the controlNet display box
+        self.controlNetImageDisplay = QtWidgets.QListView(self.controlNet)
+        color = QColor(255, 255, 255)
+        self.controlNetImageDisplay.setStyleSheet("background-color: {}".format(color.name()))
+        self.controlNetImageDisplay.setGeometry(QtCore.QRect(100, 220, 171, 161))
+        self.controlNetImageDisplay.setObjectName("controlNetImageDisplay")
+        
         #the button that would open the chat box tab
         self.ChatbotTab = QtWidgets.QPushButton(self.centralwidget)
         color = QColor(255, 255, 255)
@@ -245,7 +271,35 @@ class Ui_MainWindow(object):
         self.ControlNet.setObjectName("ControlNet")
         self.ControlNet.setVisible(False)
         
-        self.canvas.raise_()
+        #the button that turns eraser mode on or off
+        self.Erasing = QtWidgets.QPushButton(self.centralwidget)
+        self.Erasing.setGeometry(QtCore.QRect(1210, 910, 101, 28))
+        self.Erasing.setStyleSheet("")
+        self.Erasing.setObjectName("Erasing")
+        
+        #the slider that changes the value of the pen thickness
+        self.PixelThicknessSliderForPallete = QtWidgets.QSlider(self.centralwidget)
+        self.PixelThicknessSliderForPallete.setRange(1,10)
+        self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(930, 910, 160, 22))
+        self.PixelThicknessSliderForPallete.setOrientation(QtCore.Qt.Horizontal)
+        self.PixelThicknessSliderForPallete.setObjectName("PixelThicknessSliderForPallete")
+        
+        #the display for the recent inputed image
+        self.chatImageResponseDisplay = QtWidgets.QListView(self.chatBox)
+        color = QColor(255, 255, 255)
+        self.chatImageResponseDisplay.setStyleSheet("background-color: {}".format(color.name()))
+        self.chatImageResponseDisplay.setGeometry(QtCore.QRect(10, 490, 371, 411))
+        self.chatImageResponseDisplay.setObjectName("chatImageResponseDisplay")
+        
+        self.bookMarkSend.raise_()
+        
+        self.chatMessage.raise_()
+        
+        self.chatMessageSend.raise_()
+        
+        self.closeChatboxButton.raise_()
+        
+        self.chatMessageHistory.raise_()
         
         self.BookmarkTab.raise_()
         
@@ -255,8 +309,6 @@ class Ui_MainWindow(object):
         
         self.bookMarkSendFromCanvas.raise_()
         
-        self.PixelThicknessDialForPallete.raise_()
-        
         self.PixelThicknessValueForPallete.raise_()
         
         self.bookMark.raise_()
@@ -265,10 +317,16 @@ class Ui_MainWindow(object):
         
         self.controlNet.raise_()
         
+        self.Erasing.raise_()
+        
+        self.PixelThicknessSliderForPallete.raise_()
+        
+        self.chatImageResponseDisplay.raise_()
+        
         MainWindow.setCentralWidget(self.centralwidget)
         
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1791, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1800, 26))
         self.menubar.setObjectName("menubar")
         
         MainWindow.setMenuBar(self.menubar)
@@ -277,11 +335,10 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         
         MainWindow.setStatusBar(self.statusbar)
-        
+
     #untouched generated code starts here
         self.retranslateUi(MainWindow)
         self.controlNetSlider.sliderMoved['int'].connect(self.controlNetValue.display) # type: ignore
-        self.PixelThicknessDialForPallete.sliderMoved['int'].connect(self.PixelThicknessValueForPallete.display) # type: ignore
         self.closeControlNetButton.clicked.connect(self.controlNet.close) # type: ignore
         self.closeBookMarkButton.clicked.connect(self.bookMark.close) # type: ignore
         self.closeChatboxButton.clicked.connect(self.chatBox.close) # type: ignore
@@ -294,11 +351,16 @@ class Ui_MainWindow(object):
         self.BookmarkTab.clicked.connect(self.BookmarkTab.hide) # type: ignore
         self.ChatbotTab.clicked.connect(self.ChatbotTab.hide) # type: ignore
         self.closeChatboxButton.clicked.connect(self.ChatbotTab.show) # type: ignore
+        self.PixelThicknessSliderForPallete.sliderMoved['int'].connect(self.PixelThicknessValueForPallete.display) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
     #untouched generated code ends here
         self.chatMessageSend.clicked.connect(self.send_message_to_Chatbot)
         self.controlNetSendPrompt.clicked.connect(self.send_prompt_to_ControlNet)
-    #untouched generated code starts here
+        self.PixelThicknessSliderForPallete.valueChanged.connect(self.canvas.set_pen_thickness)
+        self.Erasing.clicked.connect(self.eraserMode_change_text)
+        self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
+        
+        #untouched generated code starts here
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -314,7 +376,7 @@ class Ui_MainWindow(object):
         self.bookMarkLIstOfImages.setItemText(0, _translate("MainWindow", "Nice"))
         self.bookMarkLIstOfImages.setItemText(1, _translate("MainWindow", "NotNice"))
         self.bookMarkLIstOfImages.setItemText(2, _translate("MainWindow", "Comething"))
-        self.bookMarkDisplayOnCanvas.setText(_translate("MainWindow", "Display"))
+        self.bookMarkDisplayOnCanvasButton.setText(_translate("MainWindow", "Display"))
         self.closeBookMarkButton.setText(_translate("MainWindow", "Close"))
         self.bookMarkSendFromControlNet.setText(_translate("MainWindow", "Book Mark"))
         self.controlNetSendPrompt.setText(_translate("MainWindow", "Send"))
@@ -329,13 +391,23 @@ class Ui_MainWindow(object):
         self.ChatbotTab.setText(_translate("MainWindow", "Chatbot"))
         self.BookmarkTab.setText(_translate("MainWindow", "Book Mark"))
         self.ControlNet.setText(_translate("MainWindow", "ControlNet"))
+        self.Erasing.setText(_translate("MainWindow", "Eraser Mode: off"))
     #untouched generated code ends here
+    def eraserMode_change_text(self):
+        global erase
+        if erase == "yes":
+            self.Erasing.setText("Eraser Mode: on")
+            erase = "no"
+        else:
+            self.Erasing.setText("Eraser Mode: off")
+            erase = "yes"
     def send_message_to_Chatbot(self):
         message = self.chatMessage.toPlainText()
         self.chatMessage.clear()
         self.chatMessageHistory.append(f"User: {message}")
         response = self.generate_chatbot_response(message)
-        print(response)
+        # print(response)
+        # print(self.PixelThicknessSliderForPallete.sliderPosition())
         self.chatMessageHistory.append(f"ChatBot: {response}")
     def send_prompt_to_ControlNet(self):
         message = self.controlNetPromptInput.toPlainText()
@@ -343,48 +415,97 @@ class Ui_MainWindow(object):
         value = str(self.controlNetValue.value())
         print(message + " " + value)
     def generate_chatbot_response(self, message):
-        if "cat" in message.lower():
-            response = self.get_cat_image()
-            pixmap = QtGui.QPixmap.fromImage(response)
-            return pixmap
-        else:
-            return "I'm sorry, I can only provide cat images. Please ask for a cat!"
-    def get_cat_image(self):
-        url = "https://api.thecatapi.com/v1/images/search"
-        response = requests.get(url)
-        image = QtGui.QImage.fromData(response.content)
-        return image
+        # floor length denim overalls
+        clothing_description = message
+        data = self.query("a full body, uncropped, head to toe photo of a single model wearing a "+ clothing_description + ", facing the camera, simple background")
+        stream = io.BytesIO(data.content)
+        img = Image.open(stream)
+        img.save("response2.png")
+    def query(self,payload):
+        data = json.dumps(payload)
+        response = requests.request("POST", API_URL, headers=headers, data=data)
+        return response
+    def add_item(self):
+        item_text = self.input_text.text()
+        if item_text:
+            item = QStandardItem(item_text)
+            self.model.appendRow(item)
+            self.input_text.clear()
+
+    def remove_item(self):
+        selected_indexes = self.list_view.selectedIndexes()
+        if selected_indexes:
+            for index in selected_indexes:
+                self.model.removeRow(index.row())
 class CanvasWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setMouseTracking(True)
-        self.path = QPainterPath()
-        self.pen = QPen(Qt.black, 2)
+        self.lines = []
+        self.current_line = []
+        self.pen_thickness = 1
+        self.eraser_mode = False
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(self.pen)
-        painter.drawPath(self.path)
+
+        for line in self.lines:
+            thickness = line['thickness']
+            points = line['points']
+
+            painter.setPen(QPen(Qt.black, thickness))
+            for i in range(len(points) - 1):
+                painter.drawLine(points[i], points[i + 1])
+
+        if self.current_line:
+            painter.setPen(QPen(Qt.black, self.pen_thickness))
+            for i in range(len(self.current_line) - 1):
+                painter.drawLine(self.current_line[i], self.current_line[i + 1])
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.path.moveTo(event.pos())
-            self.update()
+            if self.eraser_mode:
+                self.erase_line(event.pos())
+            else:
+                self.current_line.append(event.pos())
+                self.update()
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.LeftButton:
-            self.path.lineTo(event.pos())
-            self.update()
+            if not self.eraser_mode:
+                self.current_line.append(event.pos())
+                self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.path.lineTo(event.pos())
+            if self.current_line:
+                line = {'points': self.current_line.copy(), 'thickness': self.pen_thickness}
+                self.lines.append(line)
+                self.current_line = []
             self.update()
 
-    def clear(self):
-        self.path = QPainterPath()
+    def set_pen_thickness(self, thickness):
+        self.pen_thickness = thickness
+
+    def set_eraser_mode(self):
+        self.eraser_mode = not self.eraser_mode
         self.update()
+
+    def erase_line(self, pos):
+        for line in self.lines:
+            points = line['points']
+            for i in range(len(points) - 1):
+                p1 = points[i]
+                p2 = points[i + 1]
+                if self.is_point_on_line(pos, p1, p2):
+                    self.lines.remove(line)
+                    self.update()
+                    return
+
+    def is_point_on_line(self, point, p1, p2):
+        line_rect = p1.x(), p1.y(), p2.x(), p2.y()
+        return point in line_rect
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
