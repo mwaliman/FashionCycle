@@ -24,6 +24,8 @@ import config
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
 headers = {"Authorization": f"Bearer {config.huggingface_api_key}"}
 os.makedirs('chatbot_responses', exist_ok=True)
+os.makedirs('bookmarks', exist_ok=True)
+os.makedirs('controlnet_responses', exist_ok=True)
 
 erase = "no"
 class Ui_MainWindow(object):
@@ -150,6 +152,9 @@ class Ui_MainWindow(object):
         self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(120, 30, 171, 161))
         self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
+        self.bookMarkDisplayOnCanvas.setViewMode(QListView.IconMode)
+        self.bookMarkDisplayOnCanvas.setResizeMode(QListView.Adjust)
+
         
         #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
@@ -356,10 +361,18 @@ class Ui_MainWindow(object):
         self.Erasing.clicked.connect(self.eraserMode_change_text)
         self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
         self.canvas.add_image("response2.png")
+
+
         image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
-        image_model = ImageListModel(image_paths)
+        image_model = ImageListModel(image_paths, './chatbot_responses')
         self.chatImageResponseDisplay.setModel(image_model)
-        #untouched generated code starts here
+
+
+        image_paths = [f for f in os.listdir('./bookmarks') if 'jpg' in f]
+        image_model = ImageListModel(image_paths, './bookmarks')
+        self.bookMarkDisplayOnCanvas.setModel(image_model)
+
+    #untouched generated code starts here
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -372,16 +385,16 @@ class Ui_MainWindow(object):
         self.bookMarkSend.setText(_translate("MainWindow", "BM"))
         self.chatMessageSend.setText(_translate("MainWindow", "Send"))
         self.closeChatboxButton.setText(_translate("MainWindow", "Close"))
-        self.bookMarkLIstOfImages.setItemText(0, _translate("MainWindow", "Nice"))
-        self.bookMarkLIstOfImages.setItemText(1, _translate("MainWindow", "NotNice"))
-        self.bookMarkLIstOfImages.setItemText(2, _translate("MainWindow", "Comething"))
+        for i, f in enumerate(os.listdir('bookmarks')):
+            self.bookMarkLIstOfImages.setItemText(i, _translate("MainWindow", f))
+
         self.bookMarkDisplayOnCanvasButton.setText(_translate("MainWindow", "Display"))
         self.closeBookMarkButton.setText(_translate("MainWindow", "Close"))
         self.bookMarkSendFromControlNet.setText(_translate("MainWindow", "Book Mark"))
         self.controlNetSendPrompt.setText(_translate("MainWindow", "Send"))
-        self.bookMarkSelectionToSendControlNet.setItemText(0, _translate("MainWindow", "Nice"))
-        self.bookMarkSelectionToSendControlNet.setItemText(1, _translate("MainWindow", "NotNice"))
-        self.bookMarkSelectionToSendControlNet.setItemText(2, _translate("MainWindow", "Comething"))
+
+        for i, f in enumerate(os.listdir('bookmarks')):
+            self.bookMarkSelectionToSendControlNet.setItemText(i, _translate("MainWindow", f))
         self.controlNetSelectionToSendBookMark.setItemText(0, _translate("MainWindow", "Choice 1"))
         self.controlNetSelectionToSendBookMark.setItemText(1, _translate("MainWindow", "Choice 2"))
         self.controlNetSelectionToSendBookMark.setItemText(2, _translate("MainWindow", "Choice 3"))
@@ -440,10 +453,12 @@ class Ui_MainWindow(object):
         if selected_indexes:
             for index in selected_indexes:
                 self.model.removeRow(index.row())
+
 class ImageListModel(QAbstractListModel):
-    def __init__(self, image_paths):
+    def __init__(self, image_paths, root_dir):
         super().__init__()
         self.image_paths = image_paths
+        self.root_dir = root_dir
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.image_paths)
@@ -453,7 +468,7 @@ class ImageListModel(QAbstractListModel):
             return self.image_paths[index.row()]
 
         if role == Qt.DecorationRole:
-            pixmap = QPixmap(os.path.join('./chatbot_responses',self.image_paths[index.row()]))
+            pixmap = QPixmap(os.path.join(self.root_dir,self.image_paths[index.row()]))
             return pixmap.scaledToHeight(100)
 
         return None
