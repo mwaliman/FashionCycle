@@ -15,7 +15,7 @@ from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath
 from PyQt5.QtCore import Qt, QPoint, QRect
 import requests
 import json
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QImage, QPixmap
 from PIL import Image
 from io import BytesIO
 import sys
@@ -26,6 +26,9 @@ import json
 import requests
 import io
 from PIL import Image
+from PyQt5.QtWidgets import QApplication, QListView, QWidget, QVBoxLayout
+from PyQt5.QtCore import QAbstractListModel, Qt, QModelIndex
+from PyQt5.QtGui import QPixmap
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
 api_key = "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"
 headers = {"Authorization": f"Bearer {api_key}"}
@@ -279,7 +282,7 @@ class Ui_MainWindow(object):
         
         #the slider that changes the value of the pen thickness
         self.PixelThicknessSliderForPallete = QtWidgets.QSlider(self.centralwidget)
-        self.PixelThicknessSliderForPallete.setRange(1,10)
+        self.PixelThicknessSliderForPallete.setRange(1,16)
         self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(930, 910, 160, 22))
         self.PixelThicknessSliderForPallete.setOrientation(QtCore.Qt.Horizontal)
         self.PixelThicknessSliderForPallete.setObjectName("PixelThicknessSliderForPallete")
@@ -290,6 +293,8 @@ class Ui_MainWindow(object):
         self.chatImageResponseDisplay.setStyleSheet("background-color: {}".format(color.name()))
         self.chatImageResponseDisplay.setGeometry(QtCore.QRect(10, 490, 371, 411))
         self.chatImageResponseDisplay.setObjectName("chatImageResponseDisplay")
+        self.chatImageResponseDisplay.setViewMode(QListView.IconMode)
+        self.chatImageResponseDisplay.setResizeMode(QListView.Adjust)
         
         self.bookMarkSend.raise_()
         
@@ -359,7 +364,10 @@ class Ui_MainWindow(object):
         self.PixelThicknessSliderForPallete.valueChanged.connect(self.canvas.set_pen_thickness)
         self.Erasing.clicked.connect(self.eraserMode_change_text)
         self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
-        
+        self.canvas.add_image("response2.png")
+        image_paths = ['response2.png','cat.png']
+        image_model = ImageListModel(image_paths)
+        self.chatImageResponseDisplay.setModel(image_model)
         #untouched generated code starts here
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -420,7 +428,7 @@ class Ui_MainWindow(object):
         data = self.query("a full body, uncropped, head to toe photo of a single model wearing a "+ clothing_description + ", facing the camera, simple background")
         stream = io.BytesIO(data.content)
         img = Image.open(stream)
-        img.save("response2.png")
+        img.save(message + ".png")
     def query(self,payload):
         data = json.dumps(payload)
         response = requests.request("POST", API_URL, headers=headers, data=data)
@@ -437,75 +445,113 @@ class Ui_MainWindow(object):
         if selected_indexes:
             for index in selected_indexes:
                 self.model.removeRow(index.row())
+class ImageListModel(QAbstractListModel):
+    def __init__(self, image_paths):
+        super().__init__()
+        self.image_paths = image_paths
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.image_paths)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            return self.image_paths[index.row()]
+
+        if role == Qt.DecorationRole:
+            pixmap = QPixmap(self.image_paths[index.row()])
+            return pixmap.scaledToHeight(100)
+
+        return None
 class CanvasWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setMouseTracking(True)
-        self.lines = []
-        self.current_line = []
-        self.pen_thickness = 1
-        self.eraser_mode = False
+        self.paths = []
+        self.current_path = QPainterPath()
+        self.pen_thickness = 2
+        self.eraseMode = False
+        self.image_path = None
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        for line in self.lines:
-            thickness = line['thickness']
-            points = line['points']
+        if self.image_path:
+            image = QImage(self.image_path)
+            if not image.isNull():
+                scaled_image = self.scale_image(image, self.width(), self.height())
+                image_pos = self.calculate_image_position(scaled_image.width(), scaled_image.height())
+                painter.drawImage(image_pos, scaled_image)
 
-            painter.setPen(QPen(Qt.black, thickness))
-            for i in range(len(points) - 1):
-                painter.drawLine(points[i], points[i + 1])
+        for path, thickness, erase in self.paths:
+            pen = QPen(Qt.white if erase else Qt.black, thickness)
+            painter.setPen(pen)
+            painter.drawPath(path)
 
-        if self.current_line:
-            painter.setPen(QPen(Qt.black, self.pen_thickness))
-            for i in range(len(self.current_line) - 1):
-                painter.drawLine(self.current_line[i], self.current_line[i + 1])
+        pen = QPen(Qt.black, self.pen_thickness)
+        painter.setPen(pen)
+        painter.drawPath(self.current_path)
 
+    def scale_image(self, image, width, height):
+        aspect_ratio = image.width() / image.height()
+        target_aspect_ratio = width / height
+
+        if aspect_ratio > target_aspect_ratio:
+            target_width = width
+            target_height = int(width / aspect_ratio)
+        else:
+            target_height = height
+            target_width = int(height * aspect_ratio)
+
+        scaled_image = image.scaled(target_width, target_height, Qt.AspectRatioMode.KeepAspectRatio)
+        return scaled_image
+
+    def calculate_image_position(self, image_width, image_height):
+        canvas_width = self.width()
+        canvas_height = self.height()
+
+        x = (canvas_width - image_width) // 2
+        y = (canvas_height - image_height) // 2
+
+        return QPoint(x, y)
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if self.eraser_mode:
-                self.erase_line(event.pos())
+            if self.eraseMode:
+                pen = QPen(Qt.NoPen)
             else:
-                self.current_line.append(event.pos())
-                self.update()
+                pen = QPen(Qt.black, self.pen_thickness)
+            self.current_path = QPainterPath()
+            self.current_path.moveTo(event.pos())
+            self.update()
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.LeftButton:
-            if not self.eraser_mode:
-                self.current_line.append(event.pos())
-                self.update()
+            if self.eraseMode:
+                pen = QPen(Qt.NoPen)
+            else:
+                pen = QPen(Qt.black, self.pen_thickness)
+            self.current_path.lineTo(event.pos())
+            self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if self.current_line:
-                line = {'points': self.current_line.copy(), 'thickness': self.pen_thickness}
-                self.lines.append(line)
-                self.current_line = []
+            erase = self.eraseMode
+            self.paths.append((self.current_path, self.pen_thickness, erase))
+            self.current_path = QPainterPath()
             self.update()
 
     def set_pen_thickness(self, thickness):
         self.pen_thickness = thickness
-
+        self.update()
+    
     def set_eraser_mode(self):
-        self.eraser_mode = not self.eraser_mode
+        self.eraseMode = not self.eraseMode
+    
+    def add_image(self, image_path):
+        self.image_path = image_path
         self.update()
 
-    def erase_line(self, pos):
-        for line in self.lines:
-            points = line['points']
-            for i in range(len(points) - 1):
-                p1 = points[i]
-                p2 = points[i + 1]
-                if self.is_point_on_line(pos, p1, p2):
-                    self.lines.remove(line)
-                    self.update()
-                    return
-
-    def is_point_on_line(self, point, p1, p2):
-        line_rect = p1.x(), p1.y(), p2.x(), p2.y()
-        return point in line_rect
+    
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
