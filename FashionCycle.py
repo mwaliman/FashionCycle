@@ -20,7 +20,7 @@ import json
 from PIL import Image
 from io import BytesIO
 import os, io
-import config
+#import config
 import replicate
 
 os.environ["REPLICATE_API_TOKEN"] = config.replicate_api_key
@@ -73,21 +73,21 @@ class Ui_MainWindow(object):
         self.bookMarkSend = QtWidgets.QPushButton(self.chatBox)
         color = QColor(255, 255, 255)
         self.bookMarkSend.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkSend.setGeometry(QtCore.QRect(330, 910, 41, 28))
+        self.bookMarkSend.setGeometry(QtCore.QRect(330, 500, 41, 28))
         self.bookMarkSend.setObjectName("bookMarkSend")
         
         #the textbox that holds the user input to be sent into the chat message history
         self.chatMessage = QtWidgets.QTextEdit(self.chatBox)
         color = QColor(255, 255, 255)
         self.chatMessage.setStyleSheet("background-color: {}".format(color.name()))
-        self.chatMessage.setGeometry(QtCore.QRect(10, 910, 261, 31))
+        self.chatMessage.setGeometry(QtCore.QRect(10, 500, 261, 31))
         self.chatMessage.setObjectName("chatMessage")
         
         #the button that sends the chat message to the chat message history
         self.chatMessageSend = QtWidgets.QPushButton(self.chatBox)
         color = QColor(255, 255, 255)
         self.chatMessageSend.setStyleSheet("background-color: {}".format(color.name()))
-        self.chatMessageSend.setGeometry(QtCore.QRect(280, 910, 41, 28))
+        self.chatMessageSend.setGeometry(QtCore.QRect(280, 500, 41, 28))
         self.chatMessageSend.setObjectName("chatMessageSend")
         
         #the button that closes the chat box tab
@@ -153,7 +153,7 @@ class Ui_MainWindow(object):
         self.bookMarkSendFromControlNet = QtWidgets.QPushButton(self.controlNet)
         color = QColor(255, 255, 255)
         self.bookMarkSendFromControlNet.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkSendFromControlNet.setGeometry(QtCore.QRect(140, 880, 101, 28))
+        self.bookMarkSendFromControlNet.setGeometry(QtCore.QRect(140, 500, 101, 28))
         self.bookMarkSendFromControlNet.setObjectName("bookMarkSendFromControlNet")
         
         #the text that would hold the information to be sent to control net
@@ -209,7 +209,7 @@ class Ui_MainWindow(object):
         self.controlNetSelectionToSendBookMark = QtWidgets.QComboBox(self.controlNet)
         color = QColor(255, 255, 255)
         self.controlNetSelectionToSendBookMark.setStyleSheet("background-color: {}".format(color.name()))
-        self.controlNetSelectionToSendBookMark.setGeometry(QtCore.QRect(30, 850, 311, 22))
+        self.controlNetSelectionToSendBookMark.setGeometry(QtCore.QRect(30, 500, 311, 22))
         self.controlNetSelectionToSendBookMark.setObjectName("controlNetSelectionToSendBookMark")
         
         #the button that close the control net tab
@@ -254,13 +254,13 @@ class Ui_MainWindow(object):
         
         #the button that turns eraser mode on or off
         self.Erasing = QtWidgets.QPushButton(self.centralwidget)
-        self.Erasing.setGeometry(QtCore.QRect(782, 921, 88, 28))
+        self.Erasing.setGeometry(QtCore.QRect(782, 500, 88, 28))
         self.Erasing.setStyleSheet("")
         self.Erasing.setObjectName("Erasing")
         
         #constant tab that has both the pixel slider and the bookmark, pen and eraser mode
         self.palleteBar = QtWidgets.QGroupBox(self.centralwidget)
-        self.palleteBar.setGeometry(QtCore.QRect(780, 920, 363, 30))
+        self.palleteBar.setGeometry(QtCore.QRect(780, 500, 363, 30))
         color = QColor(255, 255, 255)
         self.palleteBar.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.palleteBar.setTitle("")
@@ -271,14 +271,14 @@ class Ui_MainWindow(object):
         self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
         color = QColor(255, 255, 255)
         self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1054, 921, 88, 28))
+        self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1054, 500, 88, 28))
         self.bookMarkSendFromCanvas.setStyleSheet("")
         self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
         
         #the slider that changes the value of the pen thickness
         self.PixelThicknessSliderForPallete = QtWidgets.QSlider(self.centralwidget)
         self.PixelThicknessSliderForPallete.setRange(1,16)
-        self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(885, 925, 160, 22))
+        self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(885, 500, 160, 22))
         self.PixelThicknessSliderForPallete.setOrientation(QtCore.Qt.Horizontal)
         self.PixelThicknessSliderForPallete.setObjectName("PixelThicknessSliderForPallete")
         
