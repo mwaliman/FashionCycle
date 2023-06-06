@@ -9,10 +9,11 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QListView
-from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap
-from PyQt5.QtCore import Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QListView, QComboBox
+from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap, QIcon
+from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
+import sketch
 import sys
 import requests
 import json
@@ -48,23 +49,6 @@ class Ui_MainWindow(object):
 
         # Set the main layout
         self.centralwidget.setLayout(self.layout)
-        
-        #the button that sends the image from bookmark to canvas
-        self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
-        color = QColor(255, 255, 255)
-        self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1310, 910, 101, 28))
-        self.bookMarkSendFromCanvas.setStyleSheet("")
-        self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
-        
-        #the display that showed the pixel thickness of the brush
-        self.PixelThicknessValueForPallete = QtWidgets.QLCDNumber(self.centralwidget)
-        self.PixelThicknessValueForPallete.display(1)
-        color = QColor(255, 255, 255)
-        self.PixelThicknessValueForPallete.setStyleSheet("background-color: {}".format(color.name()))
-        self.PixelThicknessValueForPallete.setGeometry(QtCore.QRect(810, 890, 111, 61))
-        self.PixelThicknessValueForPallete.setStyleSheet("border: 1px solid black;")
-        self.PixelThicknessValueForPallete.setObjectName("PixelThicknessValueForPallete")
         
         #the pop up tab that holds anything related to the chat box AI of stable diffusion
         self.chatBox = QtWidgets.QGroupBox(self.centralwidget)
@@ -125,11 +109,11 @@ class Ui_MainWindow(object):
         self.bookMarkLIstOfImages = QtWidgets.QComboBox(self.bookMark)
         color = QColor(255, 255, 255)
         self.bookMarkLIstOfImages.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(360, 80, 531, 31))
+        self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(360, 60, 531, 100))
+        self.bookMarkLIstOfImages.setMaxVisibleItems(3)
+        self.bookMarkLIstOfImages.setIconSize(QSize(100, 100))
+        self.bookMarkLIstOfImages.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)  # Adjust the width based on contents
         self.bookMarkLIstOfImages.setObjectName("bookMarkLIstOfImages")
-        self.bookMarkLIstOfImages.addItem("")
-        self.bookMarkLIstOfImages.addItem("")
-        self.bookMarkLIstOfImages.addItem("")
         
         #the button that would send the selected image from control net to book mark
         self.bookMarkDisplayOnCanvasButton = QtWidgets.QPushButton(self.bookMark)
@@ -154,7 +138,6 @@ class Ui_MainWindow(object):
         self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
         self.bookMarkDisplayOnCanvas.setViewMode(QListView.IconMode)
         self.bookMarkDisplayOnCanvas.setResizeMode(QListView.Adjust)
-
         
         #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
@@ -215,9 +198,6 @@ class Ui_MainWindow(object):
         self.bookMarkSelectionToSendControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSelectionToSendControlNet.setGeometry(QtCore.QRect(30, 160, 211, 31))
         self.bookMarkSelectionToSendControlNet.setObjectName("bookMarkSelectionToSendControlNet")
-        self.bookMarkSelectionToSendControlNet.addItem("")
-        self.bookMarkSelectionToSendControlNet.addItem("")
-        self.bookMarkSelectionToSendControlNet.addItem("")
         
         #the list that would show which choice for the book mark to recieve from control net
         self.controlNetSelectionToSendBookMark = QtWidgets.QComboBox(self.controlNet)
@@ -225,10 +205,6 @@ class Ui_MainWindow(object):
         self.controlNetSelectionToSendBookMark.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSelectionToSendBookMark.setGeometry(QtCore.QRect(30, 850, 311, 22))
         self.controlNetSelectionToSendBookMark.setObjectName("controlNetSelectionToSendBookMark")
-        self.controlNetSelectionToSendBookMark.addItem("")
-        self.controlNetSelectionToSendBookMark.addItem("")
-        self.controlNetSelectionToSendBookMark.addItem("")
-        self.controlNetSelectionToSendBookMark.addItem("")
         
         #the button that close the control net tab
         self.closeControlNetButton = QtWidgets.QPushButton(self.controlNet)
@@ -272,14 +248,31 @@ class Ui_MainWindow(object):
         
         #the button that turns eraser mode on or off
         self.Erasing = QtWidgets.QPushButton(self.centralwidget)
-        self.Erasing.setGeometry(QtCore.QRect(1210, 910, 101, 28))
+        self.Erasing.setGeometry(QtCore.QRect(782, 921, 88, 28))
         self.Erasing.setStyleSheet("")
         self.Erasing.setObjectName("Erasing")
+        
+        #constant tab that has both the pixel slider and the bookmark, pen and eraser mode
+        self.palleteBar = QtWidgets.QGroupBox(self.centralwidget)
+        self.palleteBar.setGeometry(QtCore.QRect(780, 920, 363, 30))
+        color = QColor(255, 255, 255)
+        self.palleteBar.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
+        self.palleteBar.setTitle("")
+        self.palleteBar.setFlat(True)
+        self.palleteBar.setObjectName("palleteBar")
+        
+        #the button that sends the image from bookmark to canvas
+        self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
+        color = QColor(255, 255, 255)
+        self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
+        self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1054, 921, 88, 28))
+        self.bookMarkSendFromCanvas.setStyleSheet("")
+        self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
         
         #the slider that changes the value of the pen thickness
         self.PixelThicknessSliderForPallete = QtWidgets.QSlider(self.centralwidget)
         self.PixelThicknessSliderForPallete.setRange(1,16)
-        self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(930, 910, 160, 22))
+        self.PixelThicknessSliderForPallete.setGeometry(QtCore.QRect(885, 925, 160, 22))
         self.PixelThicknessSliderForPallete.setOrientation(QtCore.Qt.Horizontal)
         self.PixelThicknessSliderForPallete.setObjectName("PixelThicknessSliderForPallete")
         
@@ -291,6 +284,8 @@ class Ui_MainWindow(object):
         self.chatImageResponseDisplay.setObjectName("chatImageResponseDisplay")
         self.chatImageResponseDisplay.setViewMode(QListView.IconMode)
         self.chatImageResponseDisplay.setResizeMode(QListView.Adjust)
+        
+        self.palleteBar.raise_()
         
         self.bookMarkSend.raise_()
         
@@ -309,8 +304,6 @@ class Ui_MainWindow(object):
         self.ChatbotTab.raise_()
         
         self.bookMarkSendFromCanvas.raise_()
-        
-        self.PixelThicknessValueForPallete.raise_()
         
         self.bookMark.raise_()
         
@@ -352,7 +345,6 @@ class Ui_MainWindow(object):
         self.BookmarkTab.clicked.connect(self.BookmarkTab.hide) # type: ignore
         self.ChatbotTab.clicked.connect(self.ChatbotTab.hide) # type: ignore
         self.closeChatboxButton.clicked.connect(self.ChatbotTab.show) # type: ignore
-        self.PixelThicknessSliderForPallete.sliderMoved['int'].connect(self.PixelThicknessValueForPallete.display) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
     #untouched generated code ends here
         self.chatMessageSend.clicked.connect(self.send_message_to_Chatbot)
@@ -360,8 +352,7 @@ class Ui_MainWindow(object):
         self.PixelThicknessSliderForPallete.valueChanged.connect(self.canvas.set_pen_thickness)
         self.Erasing.clicked.connect(self.eraserMode_change_text)
         self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
-        self.canvas.add_image("response2.png")
-
+        self.bookMarkDisplayOnCanvasButton.clicked.connect(self.display_selected_image)
 
         image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
         image_model = ImageListModel(image_paths, './chatbot_responses')
@@ -386,6 +377,8 @@ class Ui_MainWindow(object):
         self.chatMessageSend.setText(_translate("MainWindow", "Send"))
         self.closeChatboxButton.setText(_translate("MainWindow", "Close"))
         for i, f in enumerate(os.listdir('bookmarks')):
+            print(_translate("MainWindow", f))
+            self.bookMarkLIstOfImages.addItem(QIcon("./bookmarks/" +(_translate("MainWindow", f))), " ")
             self.bookMarkLIstOfImages.setItemText(i, _translate("MainWindow", f))
 
         self.bookMarkDisplayOnCanvasButton.setText(_translate("MainWindow", "Display"))
@@ -394,24 +387,21 @@ class Ui_MainWindow(object):
         self.controlNetSendPrompt.setText(_translate("MainWindow", "Send"))
 
         for i, f in enumerate(os.listdir('bookmarks')):
+            self.bookMarkSelectionToSendControlNet.addItem("")
             self.bookMarkSelectionToSendControlNet.setItemText(i, _translate("MainWindow", f))
-        self.controlNetSelectionToSendBookMark.setItemText(0, _translate("MainWindow", "Choice 1"))
-        self.controlNetSelectionToSendBookMark.setItemText(1, _translate("MainWindow", "Choice 2"))
-        self.controlNetSelectionToSendBookMark.setItemText(2, _translate("MainWindow", "Choice 3"))
-        self.controlNetSelectionToSendBookMark.setItemText(3, _translate("MainWindow", "Choice 4"))
         self.closeControlNetButton.setText(_translate("MainWindow", "Close"))
         self.ChatbotTab.setText(_translate("MainWindow", "Chatbot"))
         self.BookmarkTab.setText(_translate("MainWindow", "Book Mark"))
         self.ControlNet.setText(_translate("MainWindow", "ControlNet"))
-        self.Erasing.setText(_translate("MainWindow", "Eraser Mode: off"))
+        self.Erasing.setText(_translate("MainWindow", "Eraser: off"))
     #untouched generated code ends here
     def eraserMode_change_text(self):
         global erase
         if erase == "yes":
-            self.Erasing.setText("Eraser Mode: on")
+            self.Erasing.setText("Eraser: on")
             erase = "no"
         else:
-            self.Erasing.setText("Eraser Mode: off")
+            self.Erasing.setText("Eraser: off")
             erase = "yes"
     def send_message_to_Chatbot(self):
         message = self.chatMessage.toPlainText()
@@ -453,7 +443,11 @@ class Ui_MainWindow(object):
         if selected_indexes:
             for index in selected_indexes:
                 self.model.removeRow(index.row())
-
+    def display_selected_image(self):
+        img = sketch.predict('./chatbot_responses/' + self.bookMarkLIstOfImages.currentText(),'Complex Lines')
+        img.save('./sketch_complex.png')
+        self.canvas.add_image("./sketch_complex.png")
+        
 class ImageListModel(QAbstractListModel):
     def __init__(self, image_paths, root_dir):
         super().__init__()
@@ -497,10 +491,14 @@ class CanvasWidget(QWidget):
             pen = QPen(Qt.white if erase else Qt.black, thickness)
             painter.setPen(pen)
             painter.drawPath(path)
-
-        pen = QPen(Qt.black, self.pen_thickness)
-        painter.setPen(pen)
-        painter.drawPath(self.current_path)
+        if self.eraseMode:
+            pen = QPen(Qt.white, self.pen_thickness)
+            painter.setPen(pen)
+            painter.drawPath(self.current_path)
+        else:
+            pen = QPen(Qt.black, self.pen_thickness)
+            painter.setPen(pen)
+            painter.drawPath(self.current_path)
 
     def scale_image(self, image, width, height):
         aspect_ratio = image.width() / image.height()
@@ -560,8 +558,7 @@ class CanvasWidget(QWidget):
     def add_image(self, image_path):
         self.image_path = image_path
         self.update()
-
-    
+        
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)

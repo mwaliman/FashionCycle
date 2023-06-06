@@ -107,5 +107,5 @@ def predict(input_img, ver):
     drawing = transforms.ToPILImage()(drawing)
     return drawing
 
-img = predict('./response.png','Complex Lines')
-img.save('./sketch_complex.png')
+img = predict('./response.png','Complex Lines') #code for the fashiocycle
+img.save('./sketch_complex.png')		#code for the fashiocycle
