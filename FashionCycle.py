@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QListView, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListView, QComboBox, QTextEdit
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap, QIcon
 from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
@@ -21,14 +21,15 @@ from PIL import Image
 from io import BytesIO
 import os, io
 import config
+import replicate
 
+os.environ["REPLICATE_API_TOKEN"] = config.replicate_api_key
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
 headers = {"Authorization": f"Bearer {config.huggingface_api_key}"}
 os.makedirs('chatbot_responses', exist_ok=True)
 os.makedirs('bookmarks', exist_ok=True)
 os.makedirs('controlnet_responses', exist_ok=True)
 
-erase = "no"
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -131,13 +132,13 @@ class Ui_MainWindow(object):
         self.closeBookMarkButton.setObjectName("closeBookMarkButton")
         
         #the display for the recent inputed image
-        self.bookMarkDisplayOnCanvas = QtWidgets.QListView(self.bookMark)
-        color = QColor(255, 255, 255)
-        self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(120, 30, 171, 161))
-        self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
-        self.bookMarkDisplayOnCanvas.setViewMode(QListView.IconMode)
-        self.bookMarkDisplayOnCanvas.setResizeMode(QListView.Adjust)
+        # self.bookMarkDisplayOnCanvas = QtWidgets.QListView(self.bookMark)
+        # color = QColor(255, 255, 255)
+        # self.bookMarkDisplayOnCanvas.setStyleSheet("background-color: {}".format(color.name()))
+        # self.bookMarkDisplayOnCanvas.setGeometry(QtCore.QRect(120, 30, 171, 161))
+        # self.bookMarkDisplayOnCanvas.setObjectName("bookMarkDisplayOnCanvas")
+        # self.bookMarkDisplayOnCanvas.setViewMode(QListView.IconMode)
+        # self.bookMarkDisplayOnCanvas.setResizeMode(QListView.Adjust)
         
         #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
@@ -165,6 +166,7 @@ class Ui_MainWindow(object):
         #the slider that can be moved from 0 to 99 for the amount of control to control net
         self.controlNetSlider = QtWidgets.QSlider(self.controlNet)
         self.controlNetSlider.setGeometry(QtCore.QRect(120, 80, 160, 22))
+        self.controlNetSlider.setRange(1,100)
         color = QColor(255, 255, 255)
         self.controlNetSlider.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSlider.setOrientation(QtCore.Qt.Horizontal)
@@ -173,6 +175,7 @@ class Ui_MainWindow(object):
         #the value that is shown for the user to know how much control in control net
         self.controlNetValue = QtWidgets.QLCDNumber(self.controlNet)
         color = QColor(255, 255, 255)
+        self.controlNetValue.display(1)
         self.controlNetValue.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetValue.setGeometry(QtCore.QRect(120, 30, 161, 41))
         self.controlNetValue.setObjectName("controlNetValue")
@@ -196,7 +199,10 @@ class Ui_MainWindow(object):
         self.bookMarkSelectionToSendControlNet = QtWidgets.QComboBox(self.controlNet)
         color = QColor(255, 255, 255)
         self.bookMarkSelectionToSendControlNet.setStyleSheet("background-color: {}".format(color.name()))
-        self.bookMarkSelectionToSendControlNet.setGeometry(QtCore.QRect(30, 160, 211, 31))
+        self.bookMarkSelectionToSendControlNet.setGeometry(QtCore.QRect(30, 160, 310, 100))
+        self.bookMarkSelectionToSendControlNet.setMaxVisibleItems(3)
+        self.bookMarkSelectionToSendControlNet.setIconSize(QSize(100, 100))
+        self.bookMarkSelectionToSendControlNet.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)  # Adjust the width based on contents
         self.bookMarkSelectionToSendControlNet.setObjectName("bookMarkSelectionToSendControlNet")
         
         #the list that would show which choice for the book mark to recieve from control net
@@ -215,11 +221,11 @@ class Ui_MainWindow(object):
         self.closeControlNetButton.setObjectName("closeControlNetButton")
         
         #the image that is displayed in the controlNet display box
-        self.controlNetImageDisplay = QtWidgets.QListView(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.controlNetImageDisplay.setStyleSheet("background-color: {}".format(color.name()))
-        self.controlNetImageDisplay.setGeometry(QtCore.QRect(100, 220, 171, 161))
-        self.controlNetImageDisplay.setObjectName("controlNetImageDisplay")
+        # self.controlNetImageDisplay = QtWidgets.QListView(self.controlNet)
+        # color = QColor(255, 255, 255)
+        # self.controlNetImageDisplay.setStyleSheet("background-color: {}".format(color.name()))
+        # self.controlNetImageDisplay.setGeometry(QtCore.QRect(100, 220, 171, 161))
+        # self.controlNetImageDisplay.setObjectName("controlNetImageDisplay")
         
         #the button that would open the chat box tab
         self.ChatbotTab = QtWidgets.QPushButton(self.centralwidget)
@@ -350,8 +356,8 @@ class Ui_MainWindow(object):
         self.chatMessageSend.clicked.connect(self.send_message_to_Chatbot)
         self.controlNetSendPrompt.clicked.connect(self.send_prompt_to_ControlNet)
         self.PixelThicknessSliderForPallete.valueChanged.connect(self.canvas.set_pen_thickness)
-        self.Erasing.clicked.connect(self.eraserMode_change_text)
-        self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
+        self.Erasing.pressed.connect(self.eraserMode_change_text)
+        self.Erasing.pressed.connect(self.canvas.set_eraser_mode)
         self.bookMarkDisplayOnCanvasButton.clicked.connect(self.display_selected_image)
 
         image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
@@ -359,9 +365,9 @@ class Ui_MainWindow(object):
         self.chatImageResponseDisplay.setModel(image_model)
 
 
-        image_paths = [f for f in os.listdir('./bookmarks') if 'jpg' in f]
-        image_model = ImageListModel(image_paths, './bookmarks')
-        self.bookMarkDisplayOnCanvas.setModel(image_model)
+        # image_paths = [f for f in os.listdir('./bookmarks') if 'jpg' in f]
+        # image_model = ImageListModel(image_paths, './bookmarks')
+        # self.bookMarkDisplayOnCanvas.setModel(image_model)
 
     #untouched generated code starts here
     def retranslateUi(self, MainWindow):
@@ -377,7 +383,6 @@ class Ui_MainWindow(object):
         self.chatMessageSend.setText(_translate("MainWindow", "Send"))
         self.closeChatboxButton.setText(_translate("MainWindow", "Close"))
         for i, f in enumerate(os.listdir('bookmarks')):
-            print(_translate("MainWindow", f))
             self.bookMarkLIstOfImages.addItem(QIcon("./bookmarks/" +(_translate("MainWindow", f))), " ")
             self.bookMarkLIstOfImages.setItemText(i, _translate("MainWindow", f))
 
@@ -387,7 +392,7 @@ class Ui_MainWindow(object):
         self.controlNetSendPrompt.setText(_translate("MainWindow", "Send"))
 
         for i, f in enumerate(os.listdir('bookmarks')):
-            self.bookMarkSelectionToSendControlNet.addItem("")
+            self.bookMarkSelectionToSendControlNet.addItem(QIcon("./bookmarks/" +(_translate("MainWindow", f))), " ")
             self.bookMarkSelectionToSendControlNet.setItemText(i, _translate("MainWindow", f))
         self.closeControlNetButton.setText(_translate("MainWindow", "Close"))
         self.ChatbotTab.setText(_translate("MainWindow", "Chatbot"))
@@ -397,26 +402,24 @@ class Ui_MainWindow(object):
     #untouched generated code ends here
     def eraserMode_change_text(self):
         global erase
-        if erase == "yes":
+        if self.Erasing.text() == "Eraser: off":
             self.Erasing.setText("Eraser: on")
-            erase = "no"
         else:
             self.Erasing.setText("Eraser: off")
-            erase = "yes"
     def send_message_to_Chatbot(self):
         message = self.chatMessage.toPlainText()
         self.chatMessage.clear()
         self.chatMessageHistory.append(f"User: {message}")
         response = self.generate_chatbot_response(message)
-        # print(response)
-        # print(self.PixelThicknessSliderForPallete.sliderPosition())
         self.chatMessageHistory.append(f"ChatBot: {response}")
 
     def send_prompt_to_ControlNet(self):
         message = self.controlNetPromptInput.toPlainText()
         self.controlNetPromptInput.clear()
-        value = str(self.controlNetValue.value())
-        print(message + " " + value)
+        img = self.bookMarkSelectionToSendControlNet.currentText()
+        value = 30*(self.controlNetValue.value())/100
+        self.control_Net(img,message,value)
+        
     def generate_chatbot_response(self, message):
         # floor length denim overalls
         clothing_description = message
@@ -445,9 +448,17 @@ class Ui_MainWindow(object):
                 self.model.removeRow(index.row())
     def display_selected_image(self):
         img = sketch.predict('./chatbot_responses/' + self.bookMarkLIstOfImages.currentText(),'Complex Lines')
-        img.save('./sketch_complex.png')
-        self.canvas.add_image("./sketch_complex.png")
-        
+        img.save('./sketches/' + self.bookMarkLIstOfImages.currentText())
+        self.canvas.add_image('./sketches/' + self.bookMarkLIstOfImages.currentText())
+    def control_Net(self, image_input, prompt_input, scale_input):
+        output = replicate.run("jagilley/controlnet-canny:aff48af9c68d162388d230a2ab003f68d2638d88307bdaf1c2f1ac95079c9613",
+        input={"image": open('./bookmarks/' + image_input, "rb"),
+    		"prompt": prompt_input,
+    		"scale":scale_input}
+            )
+        img_data = requests.get(output[-1]).content
+        with open('./controlnet_response_' + image_input, 'wb') as handler:
+            handler.write(img_data)
 class ImageListModel(QAbstractListModel):
     def __init__(self, image_paths, root_dir):
         super().__init__()
