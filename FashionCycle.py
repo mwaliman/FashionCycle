@@ -428,7 +428,7 @@ class Ui_MainWindow(object):
         img = Image.open(stream)
         img.save('./chatbot_responses/' + message + ".jpg")
         image_paths = [f for f in os.listdir('./chatbot_responses') if 'jpg' in f]
-        image_model = ImageListModel(image_paths)
+        image_model = ImageListModel(image_paths, './chatbot_responses')
         self.chatImageResponseDisplay.setModel(image_model)
     def query(self,payload):
         data = json.dumps(payload)
