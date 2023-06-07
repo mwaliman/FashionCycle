@@ -24,65 +24,6 @@ class Canvas(QGroupBox):
         print('self',self.size())
         print('canvas',self.canvas.size())
 
-    #     self.canvas.fill(Qt.white)
-    #     self.canvas.load('./sketches/black and white striped pants.jpg')
-    #     self.currentColor = Qt.black
-    #     self.currentSize = 2
-    #     self.lastMousePos = QPoint()
-        
-    #     #This is for keeping track of how many times the mouse clicks happen in the app
-    #     self.mousePressCount = 0
-        
-    #     #This keeps the user from drawing until the left mouse button is clicked
-    #     self.draw = False
-
-
-    # def size_2(self):
-    #     self.currentSize = 2
-
-    # def mousePressEvent(self, event):
-    #     if event.button() == Qt.LeftButton:
-    #         self.draw = True
-    #         self.lastMousePos = event.pos()
-        
-    #     self.coordFile = open("Mouse Coordinates.txt" , "a")
-    #     self.mousePressCount = self.mousePressCount + 1
-        
-    #     if(self.mousePressCount > 1):
-    #         self.coordFile.write("\n\nMouse Coordinate Set: " + str(self.mousePressCount))
-            
-    #     else:
-    #         self.coordFile.write("Mouse Coordinate Set: " + str(self.mousePressCount))
-
-    # #This will detect if the mouse is moving
-    # def mouseMoveEvent(self, event):
-    #     if(event.buttons() & Qt.LeftButton) & self.draw:
-    #         painter = QPainter(self.canvas)
-    #         painter.setPen(QPen(self.currentColor, self.currentSize))
-    #         painter.drawLine(self.lastMousePos, event.pos())
-    #         self.lastMousePos = event.pos()
-    #         self.update()
-    #         print((event.x(), event.y()))
-    #         self.coordFile = open("Mouse Coordinates.txt", "a")
-    #         self.coordFile.write("\nMouse Coordinates: (x:%d , y:%d)" % (event.x(), event.y()))
-
-    # #This will detect if the mouse button has been released
-    # def mouseReleaseEvent(self, event):
-    #     if event.button() == Qt.LeftButton:
-    #         self.draw = False
-    #         self.coordFile.close()
-
-    # #This will allow painting to happen on the canvas
-    # def paintEvent(self, event):
-    #     canvasPainter  = QPainter(self)
-    #     canvasPainter.begin(self)
-    #     canvasPainter.drawImage(self.rect(),self.canvas)
-    #     canvasPainter.end()
-
-    # def saveImage(self):
-
-    #     self.canvas.save('./canvas.jpg')
-
         self.setMouseTracking(True)
         self.canvas = QImage(self.size(), QImage.Format_RGB32)
         self.canvas.fill(Qt.white)
@@ -91,13 +32,13 @@ class Canvas(QGroupBox):
         self.image_path = None
         self.bookmarks = bookmarks
 
-        image_path = './sketches/green dress.jpg'
+    def load_image(self, fname):
+        image_path = './sketches/' + fname
         image = QImage(image_path)
-        print(self.canvas.size())
         scaled_image = image.scaled(self.canvas.size(), Qt.AspectRatioMode.KeepAspectRatio)
-        print(scaled_image.size())
         self.canvas = scaled_image.copy()
-        self.save_image('./canvas.jpg')
+        self.update()
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawImage(self.rect(), self.canvas)

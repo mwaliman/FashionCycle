@@ -68,7 +68,7 @@ class Bookmark(QGroupBox):
         layout.addWidget(remove_button, 0, 1)
         
         bookMarkDisplayOnCanvasButton = QPushButton("Edit in Canvas")
-        bookMarkDisplayOnCanvasButton.clicked.connect(lambda: self.add_to_Canvas(group_box))
+        bookMarkDisplayOnCanvasButton.clicked.connect(self.edit_clicked(fname+".jpg"))
         layout.addWidget(bookMarkDisplayOnCanvasButton, 1, 1)
 
         # Add the QGroupBox to the QStandardItemModel
@@ -111,9 +111,8 @@ class Bookmark(QGroupBox):
         # Add the QLabel to the QHBoxLayout
         layout = group_box.layout()
         layout.addWidget(label, 0, 0, 2, 1)
-    def add_to_Canvas(self):
-        image_path = './sketches/green dress.jpg'
-        image = QImage(image_path)
-        scaled_image = image.scaled(self.canvas.size(), Qt.AspectRatioMode.KeepAspectRatio)
-        self.canvas = scaled_image.copy()
-        self.save_image('./canvas.jpg')
+
+    def edit_clicked(self, fname):
+        def send_to_canvas():
+            self.canvas.load_image(fname)
+        return send_to_canvas
