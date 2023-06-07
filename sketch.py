@@ -4,6 +4,7 @@ import torch.nn as nn
 import gradio as gr
 from PIL import Image
 import torchvision.transforms as transforms
+import os
 
 norm_layer = nn.InstanceNorm2d
 
@@ -91,21 +92,23 @@ model2 = Generator(3, 1, 3)
 model2.load_state_dict(torch.load('model2.pth', map_location=torch.device('cpu')))
 model2.eval()
 
-def predict(input_img, ver):
-    input_img = Image.open(input_img)
-    transform = transforms.Compose([transforms.Resize(256, Image.BICUBIC), transforms.ToTensor()])
-    input_img = transform(input_img)
-    input_img = torch.unsqueeze(input_img, 0)
+def predict(input_fname, ver):
+    if input_fname not in os.listdir('sketches'):
+        input_img = Image.open("./bookmarks/"+input_fname)
+        transform = transforms.Compose([transforms.Resize(256, Image.BICUBIC), transforms.ToTensor()])
+        input_img = transform(input_img)
+        input_img = torch.unsqueeze(input_img, 0)
 
-    drawing = 0
-    with torch.no_grad():
-        if ver == 'Simple Lines':
-            drawing = model2(input_img)[0].detach()
-        else:
-            drawing = model1(input_img)[0].detach()
-    
-    drawing = transforms.ToPILImage()(drawing)
-    return drawing
+        drawing = 0
+        with torch.no_grad():
+            if ver == 'Simple Lines':
+                drawing = model2(input_img)[0].detach()
+            else:
+                drawing = model1(input_img)[0].detach()
+        
+        drawing = transforms.ToPILImage()(drawing)
+        drawing.save('./sketches/' + input_fname)
+        return drawing
 
 #img = predict('./response.png','Complex Lines')
 #img.save('./sketch_complex.png')		

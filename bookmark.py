@@ -78,6 +78,9 @@ class Bookmark(QGroupBox):
         list_view = self.findChild(QListView)
         list_view.setIndexWidget(index, group_box)
 
+        # calculate sketch
+        sketch.predict(fname+".jpg",'complex lines')
+
     def remove_group_box(self, group_box):
         list_view = self.findChild(QListView)
         index = self.model.indexFromItem(self.model.item(0))
