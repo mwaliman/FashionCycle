@@ -77,5 +77,51 @@ class Canvas(QGroupBox):
     def save_image(self, filename):
         self.canvas.save(filename)
 
+class Pallete(QGroupBox):
+    def __init__(self):
+        super().__init__("pallete")
+        self.ThicknessLabel = QLabel("Thickness")
+        self.OpaquenessLabel = QLabel("Opaqueness")
+        self.Erasing = QPushButton("Erase Mode")
+        self.bookMarkSendFromCanvas = QPushButton("Save")
+        self.PixelThicknessSliderForPallete = QSlider()
+        self.PixelOpaquenessSliderForPallete = QSlider()
+        self.PixelThicknessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
+        self.PixelThicknessSliderForPallete.setFixedSize(100, 20)
+        self.PixelOpaquenessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
+        self.PixelOpaquenessSliderForPallete.setFixedSize(100, 20)
+        # self.PixelThicknessValueForPallete = QLCDNumber()
+        # self.PixelThicknessValueForPallete.setFixedSize(50, 20)
+        # self.PixelOpaquenessValueForPallete = QLCDNumber()
+        # self.PixelOpaquenessValueForPallete.setFixedSize(50, 20)
+        self.Erasing.setText(_translate("pallete", "Eraser Mode: off"))
+        
+        self.Erasing.raise_()
+        self.bookMarkSendFromCanvas.raise_()
+        self.PixelThicknessSliderForPallete.raise_()
+        self.PixelOpaquenessSliderForPallete.raise_()
+        
+        self.Erasing.clicked.connect(self.eraserMode_change_text)
 
+        palleteLayout = QGridLayout(self)
+        palleteLayout.addWidget(self.Erasing, 0, 0)
+        palleteLayout.addWidget(self.bookMarkSendFromCanvas, 1, 0)
+        palleteLayout.addWidget(self.PixelThicknessSliderForPallete, 0, 1)
+        palleteLayout.addWidget(self.PixelOpaquenessSliderForPallete, 1, 1)
+        palleteLayout.addWidget(self.ThicknessLabel, 0, 2)
+        palleteLayout.addWidget(self.OpaquenessLabel, 1, 2)
+        # palleteLayout.addWidget(self.PixelThicknessValueForPallete, 0, 3)
+        # palleteLayout.addWidget(self.PixelOpaquenessValueForPallete, 1, 3)
+        
+        
+        # self.PixelThicknessSliderForPallete.sliderMoved['int'].connect(self.PixelThicknessValueForPallete.display)
+        # self.PixelOpaquenessSliderForPallete.sliderMoved['int'].connect(self.PixelOpaquenessValueForPallete.display)
+    def eraserMode_change_text(self):
+        global erase
+        if erase == "yes":
+            self.Erasing.setText("Eraser Mode: on")
+            erase = "no"
+        else:
+            self.Erasing.setText("Eraser Mode: off")
+            erase = "yes"
 
