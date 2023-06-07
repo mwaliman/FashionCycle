@@ -22,10 +22,10 @@ class Bookmark(QGroupBox):
         self.bookMarkDisplayOnCanvasButton.setFixedSize(100, 30)
 
         bookMarkLayout = QGridLayout(self)
-        bookMarkLayout.addWidget(self.bookMarkLIstOfImages, 0, 0)
-        bookMarkLayout.addWidget(self.bookMarkDisplayOnCanvasButton, 0, 1)
+        #bookMarkLayout.addWidget(self.bookMarkLIstOfImages, 0, 0)
+        #bookMarkLayout.addWidget(self.bookMarkDisplayOnCanvasButton, 0, 1)
 
-        self.bookMarkDisplayOnCanvasButton.clicked.connect(self.add_group_box)
+        #self.bookMarkDisplayOnCanvasButton.clicked.connect(self.add_group_box)
         
         # Create a QListView with horizontal scrolling
         list_view = QListView()
