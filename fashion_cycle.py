@@ -3,7 +3,12 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLCDNumber, 
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap, QIcon
 from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-#import sketch
+from pallete import Pallete
+from control_net import ControlNet
+from chat_box import ChatBox
+from bookmark import Bookmark
+from canvas import Canvas
+import sketch
 import sys
 import requests
 import json
@@ -12,7 +17,6 @@ from io import BytesIO
 import os, io
 #import config
 import replicate
-from fashion_cycle import FashionCycle
 #from CanvasWidget import CanvasWidget
 
 #os.environ["REPLICATE_API_TOKEN"] = config.replicate_api_key
@@ -22,23 +26,13 @@ from fashion_cycle import FashionCycle
 #os.makedirs('bookmarks', exist_ok=True)
 #os.makedirs('controlnet_responses', exist_ok=True)
 
-app = QApplication([])
-window = QWidget()
-window.resize(1800, 1000)
-
-layout = QGridLayout(window)
-
-# Create group boxes
-fashionCycle = FashionCycle()
-
-# Add group boxes to the layout
-layout.addWidget(fashionCycle.chatBox, 0, 0, 8, 1)
-layout.addWidget(fashionCycle.bookMark, 0, 1, 2, 3)
-layout.addWidget(fashionCycle.pallete, 7, 2, 1, 1)
-layout.addWidget(fashionCycle.controlNet, 0, 4, 8, 1)
-layout.addWidget(fashionCycle.canvas, 2, 1, 6, 3)
-
-window.setLayout(layout)
-window.show()
-
-sys.exit(app.exec_())
+class FashionCycle:
+    def __init__(self):
+        self.chatBox = ChatBox()
+        self.chatBox.setMaximumWidth(300)
+        self.bookMark = Bookmark()
+        self.pallete = Pallete()
+        self.pallete.setMaximumWidth(300)
+        self.controlNet = ControlNet()
+        self.controlNet.setMaximumWidth(300)
+        self.canvas = Canvas()
