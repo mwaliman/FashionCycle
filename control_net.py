@@ -37,13 +37,14 @@ class ControlNet(QGroupBox):
         controlNetLayout.addWidget(self.controlNetSendPrompt, 1, 3)
         controlNetLayout.addWidget(self.controlNetValue, 2, 0)
         controlNetLayout.addWidget(self.controlNetSlider, 2, 1, 1, 3)
+        controlNetLayout.addWidget(self.bookMarkSelectionToSendControlNet, 3, 0, 1, 2)
     
         self.controlNetSlider.setRange(1,100)
         self.controlNetValue.display(1)
         self.controlNetSlider.sliderMoved['int'].connect(self.controlNetValue.display)
 
         list_widget = QListWidget()
-        controlNetLayout.addWidget(list_widget, 3, 0, 1, 1)
+        controlNetLayout.addWidget(list_widget, 4, 0, 1, 1)
 
         self.list_widget = list_widget
         self.list_widget.setMinimumWidth(280)
