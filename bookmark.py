@@ -46,7 +46,7 @@ class Bookmark(QGroupBox):
 
         bookMarkLayout.addWidget(list_view)
 
-    def add_group_box(self):
+    def add_group_box(self, fname):
         # Create a new QGroupBox
         group_box = QGroupBox(self)
         group_box.setTitle("Group Box")
@@ -56,7 +56,7 @@ class Bookmark(QGroupBox):
         group_box.setLayout(layout)
 
         # Load and display the image
-        self.load_image(group_box, "./bookmarks/red dress.jpg", desired_width=100, desired_height=100)
+        self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=100, desired_height=100)
 
         # Create a QPushButton for remove
         remove_button = QPushButton("Remove")
