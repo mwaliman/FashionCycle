@@ -12,6 +12,7 @@ from io import BytesIO
 import os, io
 import config
 import replicate
+import shutil
 
 os.environ["REPLICATE_API_TOKEN"] = config.replicate_api_key
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
@@ -21,12 +22,13 @@ os.makedirs('bookmarks', exist_ok=True)
 os.makedirs('controlnet_responses', exist_ok=True)
 
 class ChatBox(QGroupBox):
-    def __init__(self):
+    def __init__(self, bookmarks):
         super().__init__("chatBox")
         self.chatMessageSend = QPushButton("Send")
         self.chatMessageSend.setFixedSize(100, 30)
         self.chatMessage = QLineEdit("")
         self.chatMessage.setFixedSize(150, 30)
+        self.bookmarks = bookmarks
 
         chatBoxLayout = QGridLayout(self)
         chatBoxLayout.addWidget(self.chatMessage, 0, 0)
@@ -77,7 +79,7 @@ class ChatBox(QGroupBox):
         layout.addWidget(bookMarkSend)
 
         # Connect the button's clicked signal to the slot function
-        bookMarkSend.clicked.connect(self.bookmark_clicked)
+        bookMarkSend.clicked.connect(self.bookmark_clicked(message))
         
         # Create a QListWidgetItem and set the QGroupBox as its widget
         item = QListWidgetItem(self.list_widget)
@@ -102,5 +104,10 @@ class ChatBox(QGroupBox):
         layout = group_box.layout()
         layout.addWidget(label)
 
-    def bookmark_clicked(self):
-        print("working")
+    def bookmark_clicked(self, fname):
+
+        def add_to_bookmarks():
+            # add to folder bookmarks
+            shutil.copyfile('./chatbot_responses/' + fname + ".jpg", './bookmarks/' + fname + ".jpg")
+            self.bookmarks.add_group_box(fname)
+        return add_to_bookmarks
