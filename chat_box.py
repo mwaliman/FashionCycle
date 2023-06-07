@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow, QVBoxLayout, QLCDNumber, QLineEdit, QGridLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListWidget,QHBoxLayout, QComboBox, QTextEdit, QSlider , QGroupBox
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow, QListView, QVBoxLayout, QLCDNumber, QLineEdit, QGridLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListWidget,QHBoxLayout, QComboBox, QTextEdit, QSlider , QGroupBox
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap, QIcon
 from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
@@ -24,20 +24,21 @@ os.makedirs('controlnet_responses', exist_ok=True)
 class ChatBox(QGroupBox):
     def __init__(self, bookmarks):
         super().__init__("chatBox")
-        self.chatMessageSend = QPushButton("Send")
-        self.chatMessageSend.setFixedSize(100, 30)
+        self.chatMessageSend = QPushButton("Generate")
         self.chatMessage = QLineEdit("")
-        self.chatMessage.setFixedSize(150, 30)
         self.bookmarks = bookmarks
+        self.recentReponseImageDisplay = QListView()
+        self.recentReponseImageDisplay.setFixedSize(280,280)
 
         chatBoxLayout = QGridLayout(self)
-        chatBoxLayout.addWidget(self.chatMessage, 0, 0)
-        chatBoxLayout.addWidget(self.chatMessageSend, 0, 1)
+        chatBoxLayout.addWidget(self.chatMessage, 1, 0, 1, 3)
+        chatBoxLayout.addWidget(self.chatMessageSend, 1, 3)
+        chatBoxLayout.addWidget(self.recentReponseImageDisplay, 0, 0, 1, 4)
         
         self.chatMessageSend.clicked.connect(self.add_group_box)
         
         list_widget = QListWidget()
-        chatBoxLayout.addWidget(list_widget, 2, 0, 1, 1)
+        chatBoxLayout.addWidget(list_widget, 2, 0, 1, 4)
 
         self.list_widget = list_widget
         self.list_widget.setMinimumWidth(280)

@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow, QVBoxLayout, QLCDNumber, QLineEdit, QGridLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListWidget,QHBoxLayout, QComboBox, QTextEdit, QSlider , QGroupBox
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow, QVBoxLayout, QListView, QLCDNumber, QLineEdit, QGridLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListWidget,QHBoxLayout, QComboBox, QTextEdit, QSlider , QGroupBox
 from PyQt5.QtGui import QPainter, QColor, QPen, QPainterPath, QImage, QPixmap, QIcon
 from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
@@ -24,7 +24,7 @@ class ControlNet(QGroupBox):
     def __init__(self, bookmarks):
         super().__init__("ControlNet")
         _translate = QtCore.QCoreApplication.translate
-        self.controlNetSendPrompt = QPushButton("Send")
+        self.controlNetSendPrompt = QPushButton("Generate")
         self.controlNetSendPrompt.clicked.connect(self.add_group_box)
         self.controlNetPromptInput = QLineEdit("")
         self.bookMarkSelectionToSendControlNet = QComboBox()
@@ -35,13 +35,16 @@ class ControlNet(QGroupBox):
         self.controlNetValue = QLCDNumber()
         self.controlNetValue.setFixedSize(50, 20)
         self.bookmarks = bookmarks
+        self.recentReponseImageDisplay = QListView()
+        self.recentReponseImageDisplay.setFixedSize(280,280)
 
         controlNetLayout = QGridLayout(self)
-        controlNetLayout.addWidget(self.controlNetPromptInput, 1, 0, 1, 2)
-        controlNetLayout.addWidget(self.controlNetSendPrompt, 1, 3)
-        controlNetLayout.addWidget(self.controlNetValue, 2, 0)
-        controlNetLayout.addWidget(self.controlNetSlider, 2, 1, 1, 3)
-        controlNetLayout.addWidget(self.bookMarkSelectionToSendControlNet, 3, 0, 1, 2)
+        controlNetLayout.addWidget(self.controlNetPromptInput, 2, 0, 1, 3)
+        controlNetLayout.addWidget(self.controlNetSendPrompt, 2, 3)
+        controlNetLayout.addWidget(self.controlNetValue, 3, 0)
+        controlNetLayout.addWidget(self.controlNetSlider, 3, 1, 1, 3)
+        controlNetLayout.addWidget(self.bookMarkSelectionToSendControlNet, 1, 0, 1, 2)
+        controlNetLayout.addWidget(self.recentReponseImageDisplay, 0, 0, 1, 2)
         
         for i, f in enumerate(os.listdir('bookmarks')):
             self.bookMarkSelectionToSendControlNet.addItem(f)
