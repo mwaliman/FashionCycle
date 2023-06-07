@@ -27,7 +27,7 @@ class Pallete(QGroupBox):
         self.ThicknessLabel = QLabel("Thickness")
         self.OpaquenessLabel = QLabel("Opaqueness")
         self.Erasing = QPushButton("Erase Mode")
-        self.bookMarkSendFromCanvas = QPushButton("Book Mark")
+        self.bookMarkSendFromCanvas = QPushButton("Save")
         self.PixelThicknessSliderForPallete = QSlider()
         self.PixelOpaquenessSliderForPallete = QSlider()
         self.PixelThicknessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal

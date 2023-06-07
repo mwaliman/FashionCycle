@@ -19,8 +19,8 @@ class Canvas(QGroupBox):
         super().__init__("Canvas")
         # self.label5 = QLabel("Widget 5")
         self.bookmarks = bookmarks
-        self.setFixedSize(QSize(800,600))
-        self.canvas = QImage(800,600, QImage.Format_RGB32)
+        self.setFixedSize(QSize(600,600))
+        self.canvas = QImage(600,600, QImage.Format_RGB32)
         print('self',self.size())
         print('canvas',self.canvas.size())
 

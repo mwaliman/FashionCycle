@@ -17,9 +17,9 @@ import replicate
 class Bookmark(QGroupBox):
     def __init__(self):
         super().__init__("bookMark")
-        self.bookMarkDisplayOnCanvasButton = QPushButton("Display")
         self.bookMarkLIstOfImages = QComboBox()
         self.bookMarkDisplayOnCanvasButton.setFixedSize(100, 30)
+        self.canvas = None
 
         bookMarkLayout = QGridLayout(self)
         #bookMarkLayout.addWidget(self.bookMarkLIstOfImages, 0, 0)
@@ -49,7 +49,8 @@ class Bookmark(QGroupBox):
         for f in image_paths:
             print(f)
             self.add_group_box(f.split('.')[0])
-
+        
+        
     def add_group_box(self, fname):
         # Create a new QGroupBox
         group_box = QGroupBox(self)
@@ -66,6 +67,10 @@ class Bookmark(QGroupBox):
         remove_button = QPushButton("Remove")
         remove_button.clicked.connect(lambda: self.remove_group_box(group_box))
         layout.addWidget(remove_button)
+        
+        bookMarkDisplayOnCanvasButton = QPushButton("Edit in Canvas")
+        bookMarkDisplayOnCanvasButton.clicked.connect(lambda: self.add_to_Canvas(group_box))
+        layout.addWidget(bookMarkDisplayOnCanvasButton)
 
         # Add the QGroupBox to the QStandardItemModel
         item = QStandardItem()
@@ -107,3 +112,9 @@ class Bookmark(QGroupBox):
         # Add the QLabel to the QHBoxLayout
         layout = group_box.layout()
         layout.addWidget(label)
+    def add_to_Canvas(self)
+        image_path = './sketches/green dress.jpg'
+        image = QImage(image_path)
+        scaled_image = image.scaled(self.canvas.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        self.canvas = scaled_image.copy()
+        self.save_image('./canvas.jpg')

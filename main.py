@@ -28,7 +28,7 @@ from canvas import Canvas
 
 app = QApplication([])
 window = QWidget()
-window.resize(1800, 1000)
+window.resize(1200, 800)
 
 layout = QGridLayout(window)
 
@@ -43,6 +43,7 @@ class FashionCycle:
         self.controlNet = ControlNet(self.bookMark)
         self.controlNet.setMaximumWidth(300)
         self.canvas = Canvas(self.bookMark)
+        self.bookMark.canvas = self.canvas
 
 fashionCycle = FashionCycle()
 
@@ -55,5 +56,6 @@ layout.addWidget(fashionCycle.pallete, 7, 2, 1, 1)
 
 window.setLayout(layout)
 window.show()
+
 
 sys.exit(app.exec_())
