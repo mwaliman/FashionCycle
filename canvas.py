@@ -19,7 +19,10 @@ class Canvas(QGroupBox):
         super().__init__("Canvas")
         # self.label5 = QLabel("Widget 5")
         self.bookmarks = bookmarks
-        self.canvas = QImage(self.size(), QImage.Format_RGB32)
+        self.setFixedSize(QSize(800,600))
+        self.canvas = QImage(800,600, QImage.Format_RGB32)
+        print('self',self.size())
+        print('canvas',self.canvas.size())
 
     #     self.canvas.fill(Qt.white)
     #     self.canvas.load('./sketches/black and white striped pants.jpg')
@@ -88,11 +91,13 @@ class Canvas(QGroupBox):
         self.image_path = None
         self.bookmarks = bookmarks
 
-        image_path = './sketches/black and white striped pants.jpg'
+        image_path = './sketches/green dress.jpg'
         image = QImage(image_path)
-        scaled_image = image.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        print(self.canvas.size())
+        scaled_image = image.scaled(self.canvas.size(), Qt.AspectRatioMode.KeepAspectRatio)
+        print(scaled_image.size())
         self.canvas = scaled_image.copy()
-
+        self.save_image('./canvas.jpg')
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawImage(self.rect(), self.canvas)
