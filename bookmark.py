@@ -45,11 +45,15 @@ class Bookmark(QGroupBox):
         list_view.setModel(self.model)
 
         bookMarkLayout.addWidget(list_view)
+        image_paths = [f for f in os.listdir('./bookmarks') if 'jpg' in f]
+        for f in image_paths:
+            print(f)
+            self.add_group_box(f.split('.')[0])
 
     def add_group_box(self, fname):
         # Create a new QGroupBox
         group_box = QGroupBox(self)
-        group_box.setTitle("Group Box")
+        group_box.setTitle(fname)
 
         # Create a QHBoxLayout for the group box
         layout = QHBoxLayout(group_box)
