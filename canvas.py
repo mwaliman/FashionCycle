@@ -31,6 +31,7 @@ class Canvas(QGroupBox):
         self.eraseMode = False
         self.image_path = None
         self.bookmarks = bookmarks
+        self.pallete = Pallete()
 
     def load_image(self, fname):
         image_path = './sketches/' + fname
@@ -94,7 +95,7 @@ class Pallete(QGroupBox):
         # self.PixelThicknessValueForPallete.setFixedSize(50, 20)
         # self.PixelOpaquenessValueForPallete = QLCDNumber()
         # self.PixelOpaquenessValueForPallete.setFixedSize(50, 20)
-        self.Erasing.setText(_translate("pallete", "Eraser Mode: off"))
+        
         
         self.Erasing.raise_()
         self.bookMarkSendFromCanvas.raise_()
@@ -102,6 +103,7 @@ class Pallete(QGroupBox):
         self.PixelOpaquenessSliderForPallete.raise_()
         
         self.Erasing.clicked.connect(self.eraserMode_change_text)
+        self.Erasing.clicked.connect(self.canvas.set_eraser_mode)
 
         palleteLayout = QGridLayout(self)
         palleteLayout.addWidget(self.Erasing, 0, 0)
@@ -124,4 +126,4 @@ class Pallete(QGroupBox):
         else:
             self.Erasing.setText("Eraser Mode: off")
             erase = "yes"
-
+    

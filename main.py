@@ -13,7 +13,6 @@ import os, io
 #import config
 import replicate
 #from CanvasWidget import CanvasWidget
-from pallete import Pallete
 from control_net import ControlNet
 from chat_box import ChatBox
 from bookmark import Bookmark
@@ -38,12 +37,12 @@ class FashionCycle:
         self.bookMark = Bookmark()
         self.chatBox = ChatBox(self.bookMark)
         self.chatBox.setMaximumWidth(300)
-        self.pallete = Pallete()
-        self.pallete.setMaximumWidth(350)
         self.controlNet = ControlNet(self.bookMark)
         self.controlNet.setMaximumWidth(300)
         self.canvas = Canvas(self.bookMark)
         self.bookMark.canvas = self.canvas
+        self.pallete = self.canvas.pallete
+        self.pallete.setMaximumWidth(350)
 
 fashionCycle = FashionCycle()
 
