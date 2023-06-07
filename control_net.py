@@ -22,6 +22,7 @@ os.makedirs('controlnet_responses', exist_ok=True)
 class ControlNet(QGroupBox):
     def __init__(self):
         super().__init__("ControlNet")
+        _translate = QtCore.QCoreApplication.translate
         self.controlNetSendPrompt = QPushButton("Send")
         self.controlNetPromptInput = QLineEdit("")
         self.bookMarkSelectionToSendControlNet = QComboBox()
@@ -38,7 +39,11 @@ class ControlNet(QGroupBox):
         controlNetLayout.addWidget(self.controlNetValue, 2, 0)
         controlNetLayout.addWidget(self.controlNetSlider, 2, 1, 1, 3)
         controlNetLayout.addWidget(self.bookMarkSelectionToSendControlNet, 3, 0, 1, 2)
-    
+        
+        for i, f in enumerate(os.listdir('bookmarks')):
+            print(f)
+            self.bookMarkSelectionToSendControlNet.addItem(f)
+
         self.controlNetSlider.setRange(1,100)
         self.controlNetValue.display(1)
         self.controlNetSlider.sliderMoved['int'].connect(self.controlNetValue.display)
@@ -48,6 +53,7 @@ class ControlNet(QGroupBox):
 
         self.list_widget = list_widget
         self.list_widget.setMinimumWidth(280)
+
     def control_Net(self, image_input, prompt_input, scale_input):
         output = replicate.run("jagilley/controlnet-canny:aff48af9c68d162388d230a2ab003f68d2638d88307bdaf1c2f1ac95079c9613",
         input={"image": open('./bookmarks/' + image_input, "rb"),
