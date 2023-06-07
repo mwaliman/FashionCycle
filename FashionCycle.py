@@ -37,8 +37,8 @@ class Ui_MainWindow(object):
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        color = QColor(255, 255, 255)
-        self.centralwidget.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.centralwidget.setStyleSheet("background-color: {}".format(color.name()))
         
         
         # Create a vertical layout for the central widget
@@ -54,8 +54,8 @@ class Ui_MainWindow(object):
         #the pop up tab that holds anything related to the chat box AI of stable diffusion
         self.chatBox = QtWidgets.QGroupBox(self.centralwidget)
         self.chatBox.setGeometry(QtCore.QRect(10, 10, 401, 951))
-        color = QColor(102, 255, 255)
-        self.chatBox.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
+        # color = QColor(102, 255, 255)
+        # self.chatBox.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.chatBox.setTitle("")
         self.chatBox.setFlat(True)
         self.chatBox.setObjectName("chatBox")
@@ -65,28 +65,28 @@ class Ui_MainWindow(object):
         self.chatMessageHistory.setGeometry(QtCore.QRect(10, 30, 371, 450))
         self.chatMessageHistory.setMinimumSize(QtCore.QSize(311, 450))
         self.chatMessageHistory.setAutoFillBackground(False)
-        color = QColor(255, 255, 255)
-        self.chatMessageHistory.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.chatMessageHistory.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessageHistory.setObjectName("chatMessageHistory")
         
         #the button that sends the specific image in displayed will be sent to the book mark tab
         self.bookMarkSend = QtWidgets.QPushButton(self.chatBox)
-        color = QColor(255, 255, 255)
-        self.bookMarkSend.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkSend.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSend.setGeometry(QtCore.QRect(330, 910, 41, 28))
         self.bookMarkSend.setObjectName("bookMarkSend")
         
         #the textbox that holds the user input to be sent into the chat message history
         self.chatMessage = QtWidgets.QTextEdit(self.chatBox)
-        color = QColor(255, 255, 255)
-        self.chatMessage.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.chatMessage.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessage.setGeometry(QtCore.QRect(10, 910, 261, 31))
         self.chatMessage.setObjectName("chatMessage")
         
         #the button that sends the chat message to the chat message history
         self.chatMessageSend = QtWidgets.QPushButton(self.chatBox)
-        color = QColor(255, 255, 255)
-        self.chatMessageSend.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.chatMessageSend.setStyleSheet("background-color: {}".format(color.name()))
         self.chatMessageSend.setGeometry(QtCore.QRect(280, 910, 41, 28))
         self.chatMessageSend.setObjectName("chatMessageSend")
         
@@ -100,16 +100,16 @@ class Ui_MainWindow(object):
         self.bookMark = QtWidgets.QGroupBox(self.centralwidget)
         self.bookMark.setGeometry(QtCore.QRect(410, 10, 1021, 211))
         self.bookMark.setLayoutDirection(QtCore.Qt.LeftToRight)
-        color = QColor(255, 255, 150)
-        self.bookMark.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 150)
+        # self.bookMark.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.bookMark.setTitle("")
         self.bookMark.setFlat(True)
         self.bookMark.setObjectName("bookMark")
         
         #the tab list that would show the images in a list
         self.bookMarkLIstOfImages = QtWidgets.QComboBox(self.bookMark)
-        color = QColor(255, 255, 255)
-        self.bookMarkLIstOfImages.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkLIstOfImages.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkLIstOfImages.setGeometry(QtCore.QRect(360, 60, 531, 100))
         self.bookMarkLIstOfImages.setMaxVisibleItems(3)
         self.bookMarkLIstOfImages.setIconSize(QSize(100, 100))
@@ -118,15 +118,15 @@ class Ui_MainWindow(object):
         
         #the button that would send the selected image from control net to book mark
         self.bookMarkDisplayOnCanvasButton = QtWidgets.QPushButton(self.bookMark)
-        color = QColor(255, 255, 255)
-        self.bookMarkDisplayOnCanvasButton.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkDisplayOnCanvasButton.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkDisplayOnCanvasButton.setGeometry(QtCore.QRect(950, 180, 51, 28))
         self.bookMarkDisplayOnCanvasButton.setObjectName("bookMarkDisplayOnCanvasButton")
         
         #the button that closes the book mark tab
         self.closeBookMarkButton = QtWidgets.QPushButton(self.bookMark)
-        color = QColor(255, 0, 0)
-        self.closeBookMarkButton.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 0, 0)
+        # self.closeBookMarkButton.setStyleSheet("background-color: {}".format(color.name()))
         self.closeBookMarkButton.setGeometry(QtCore.QRect(10, 0, 93, 28))
         self.closeBookMarkButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeBookMarkButton.setObjectName("closeBookMarkButton")
@@ -143,23 +143,23 @@ class Ui_MainWindow(object):
         #the pop up tab that holds anything related to the book mark or favorite
         self.controlNet = QtWidgets.QGroupBox(self.centralwidget)
         self.controlNet.setGeometry(QtCore.QRect(1430, 10, 371, 931))
-        color = QColor(0, 255, 0)
-        self.controlNet.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
+        # color = QColor(0, 255, 0)
+        # self.controlNet.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.controlNet.setTitle("")
         self.controlNet.setFlat(True)
         self.controlNet.setObjectName("controlNet")
         
         #the button that would send the selected image from book mark to control net
         self.bookMarkSendFromControlNet = QtWidgets.QPushButton(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.bookMarkSendFromControlNet.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkSendFromControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSendFromControlNet.setGeometry(QtCore.QRect(140, 880, 101, 28))
         self.bookMarkSendFromControlNet.setObjectName("bookMarkSendFromControlNet")
         
         #the text that would hold the information to be sent to control net
         self.controlNetPromptInput = QtWidgets.QTextEdit(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.controlNetPromptInput.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.controlNetPromptInput.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetPromptInput.setGeometry(QtCore.QRect(30, 120, 211, 31))
         self.controlNetPromptInput.setObjectName("controlNetPromptInput")
         
@@ -167,38 +167,38 @@ class Ui_MainWindow(object):
         self.controlNetSlider = QtWidgets.QSlider(self.controlNet)
         self.controlNetSlider.setGeometry(QtCore.QRect(120, 80, 160, 22))
         self.controlNetSlider.setRange(1,100)
-        color = QColor(255, 255, 255)
-        self.controlNetSlider.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.controlNetSlider.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSlider.setOrientation(QtCore.Qt.Horizontal)
         self.controlNetSlider.setObjectName("controlNetSlider")
         
         #the value that is shown for the user to know how much control in control net
         self.controlNetValue = QtWidgets.QLCDNumber(self.controlNet)
-        color = QColor(255, 255, 255)
+        # color = QColor(255, 255, 255)
         self.controlNetValue.display(1)
-        self.controlNetValue.setStyleSheet("background-color: {}".format(color.name()))
+        # self.controlNetValue.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetValue.setGeometry(QtCore.QRect(120, 30, 161, 41))
         self.controlNetValue.setObjectName("controlNetValue")
         
         #the list that holds all the images from the output of control net
         self.controlNetImageList = QtWidgets.QListView(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.controlNetImageList.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.controlNetImageList.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetImageList.setGeometry(QtCore.QRect(30, 400, 311, 440))
         self.controlNetImageList.setObjectName("controlNetImageList")
         
         #the button that would sent the prompt and the control value to the control net API
         self.controlNetSendPrompt = QtWidgets.QPushButton(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.controlNetSendPrompt.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.controlNetSendPrompt.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSendPrompt.setGeometry(QtCore.QRect(250, 120, 101, 28))
         self.controlNetSendPrompt.setStyleSheet("")
         self.controlNetSendPrompt.setObjectName("controlNetSendPrompt")
         
         #the list that would show which choice for the control net to recieve from the book mark
         self.bookMarkSelectionToSendControlNet = QtWidgets.QComboBox(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.bookMarkSelectionToSendControlNet.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkSelectionToSendControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSelectionToSendControlNet.setGeometry(QtCore.QRect(30, 160, 310, 100))
         self.bookMarkSelectionToSendControlNet.setMaxVisibleItems(3)
         self.bookMarkSelectionToSendControlNet.setIconSize(QSize(100, 100))
@@ -207,15 +207,15 @@ class Ui_MainWindow(object):
         
         #the list that would show which choice for the book mark to recieve from control net
         self.controlNetSelectionToSendBookMark = QtWidgets.QComboBox(self.controlNet)
-        color = QColor(255, 255, 255)
-        self.controlNetSelectionToSendBookMark.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.controlNetSelectionToSendBookMark.setStyleSheet("background-color: {}".format(color.name()))
         self.controlNetSelectionToSendBookMark.setGeometry(QtCore.QRect(30, 850, 311, 22))
         self.controlNetSelectionToSendBookMark.setObjectName("controlNetSelectionToSendBookMark")
         
         #the button that close the control net tab
         self.closeControlNetButton = QtWidgets.QPushButton(self.controlNet)
-        color = QColor(255, 0, 0)
-        self.closeControlNetButton.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 0, 0)
+        # self.closeControlNetButton.setStyleSheet("background-color: {}".format(color.name()))
         self.closeControlNetButton.setGeometry(QtCore.QRect(10, 0, 93, 28))
         self.closeControlNetButton.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgb(255, 0, 0), stop:1 rgb(255, 0, 0));")
         self.closeControlNetButton.setObjectName("closeControlNetButton")
@@ -229,24 +229,24 @@ class Ui_MainWindow(object):
         
         #the button that would open the chat box tab
         self.ChatbotTab = QtWidgets.QPushButton(self.centralwidget)
-        color = QColor(255, 255, 255)
-        self.ChatbotTab.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.ChatbotTab.setStyleSheet("background-color: {}".format(color.name()))
         self.ChatbotTab.setGeometry(QtCore.QRect(0, 460, 93, 28))
         self.ChatbotTab.setObjectName("ChatbotTab")
         self.ChatbotTab.setVisible(False)
         
         #the button that would open the book mark tab
         self.BookmarkTab = QtWidgets.QPushButton(self.centralwidget)
-        color = QColor(255, 255, 255)
-        self.BookmarkTab.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.BookmarkTab.setStyleSheet("background-color: {}".format(color.name()))
         self.BookmarkTab.setGeometry(QtCore.QRect(870, 20, 93, 28))
         self.BookmarkTab.setObjectName("BookmarkTab")
         self.BookmarkTab.setVisible(False)
         
         #the button that would open the control net tab
         self.ControlNet = QtWidgets.QPushButton(self.centralwidget)
-        color = QColor(255, 255, 255)
-        self.ControlNet.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.ControlNet.setStyleSheet("background-color: {}".format(color.name()))
         self.ControlNet.setGeometry(QtCore.QRect(1710, 460, 93, 28))
         self.ControlNet.setInputMethodHints(QtCore.Qt.ImhHiddenText)
         self.ControlNet.setObjectName("ControlNet")
@@ -261,16 +261,16 @@ class Ui_MainWindow(object):
         #constant tab that has both the pixel slider and the bookmark, pen and eraser mode
         self.palleteBar = QtWidgets.QGroupBox(self.centralwidget)
         self.palleteBar.setGeometry(QtCore.QRect(780, 920, 363, 30))
-        color = QColor(255, 255, 255)
-        self.palleteBar.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.palleteBar.setStyleSheet("border: 1px solid black;""background-color: {}".format(color.name()))
         self.palleteBar.setTitle("")
         self.palleteBar.setFlat(True)
         self.palleteBar.setObjectName("palleteBar")
         
         #the button that sends the image from bookmark to canvas
         self.bookMarkSendFromCanvas = QtWidgets.QPushButton(self.centralwidget)
-        color = QColor(255, 255, 255)
-        self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.bookMarkSendFromCanvas.setStyleSheet("background-color: {}".format(color.name()))
         self.bookMarkSendFromCanvas.setGeometry(QtCore.QRect(1054, 921, 88, 28))
         self.bookMarkSendFromCanvas.setStyleSheet("")
         self.bookMarkSendFromCanvas.setObjectName("bookMarkSendFromCanvas")
@@ -284,8 +284,8 @@ class Ui_MainWindow(object):
         
         #the display for the recent inputed image
         self.chatImageResponseDisplay = QtWidgets.QListView(self.chatBox)
-        color = QColor(255, 255, 255)
-        self.chatImageResponseDisplay.setStyleSheet("background-color: {}".format(color.name()))
+        # color = QColor(255, 255, 255)
+        # self.chatImageResponseDisplay.setStyleSheet("background-color: {}".format(color.name()))
         self.chatImageResponseDisplay.setGeometry(QtCore.QRect(10, 490, 371, 411))
         self.chatImageResponseDisplay.setObjectName("chatImageResponseDisplay")
         self.chatImageResponseDisplay.setViewMode(QListView.IconMode)
@@ -377,7 +377,7 @@ class Ui_MainWindow(object):
         self.chatMessageHistory.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:\'Arial\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.bookMarkSend.setText(_translate("MainWindow", "BM"))
         self.chatMessageSend.setText(_translate("MainWindow", "Send"))
