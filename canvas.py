@@ -15,10 +15,11 @@ import replicate
 #from CanvasWidget import CanvasWidget
 
 class Canvas(QGroupBox):
-    def __init__(self):
+    def __init__(self,bookmarks):
         super().__init__("Canvas")
         # self.label5 = QLabel("Widget 5")
         # self.button5 = QPushButton("Button 5")
+        self.bookmarks = bookmarks
 
         # canvasLayout = QGridLayout(self)
         # canvasLayout.addWidget(self.label5)

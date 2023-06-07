@@ -111,3 +111,5 @@ class ChatBox(QGroupBox):
             shutil.copyfile('./chatbot_responses/' + fname + ".jpg", './bookmarks/' + fname + ".jpg")
             self.bookmarks.add_group_box(fname)
         return add_to_bookmarks
+
+        

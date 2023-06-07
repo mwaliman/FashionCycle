@@ -12,7 +12,7 @@ from io import BytesIO
 import os, io
 
 class CanvasWidget(QWidget):
-    def __init__(self):
+    def __init__(self,bookmarks):
         super().__init__()
         self.setMouseTracking(True)
         self.paths = []
@@ -20,6 +20,7 @@ class CanvasWidget(QWidget):
         self.pen_thickness = 2
         self.eraseMode = False
         self.image_path = None
+        self.bookmarks = bookmarks
 
     def paintEvent(self, event):
         painter = QPainter(self)

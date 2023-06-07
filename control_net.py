@@ -12,6 +12,7 @@ from io import BytesIO
 import os, io
 import config
 import replicate
+import shutil
 
 os.environ["REPLICATE_API_TOKEN"] = config.replicate_api_key
 API_URL = "https://api-inference.huggingface.co/models/SG161222/Realistic_Vision_V1.4"
@@ -20,10 +21,11 @@ os.makedirs('chatbot_responses', exist_ok=True)
 os.makedirs('bookmarks', exist_ok=True)
 os.makedirs('controlnet_responses', exist_ok=True)
 class ControlNet(QGroupBox):
-    def __init__(self):
+    def __init__(self, bookmarks):
         super().__init__("ControlNet")
         _translate = QtCore.QCoreApplication.translate
         self.controlNetSendPrompt = QPushButton("Send")
+        self.controlNetSendPrompt.clicked.connect(self.add_group_box)
         self.controlNetPromptInput = QLineEdit("")
         self.bookMarkSelectionToSendControlNet = QComboBox()
         self.bookMarkSelectionToSendControlNet.setFixedSize(280, 30)
@@ -32,6 +34,7 @@ class ControlNet(QGroupBox):
         self.controlNetSlider.setFixedSize(200, 20)
         self.controlNetValue = QLCDNumber()
         self.controlNetValue.setFixedSize(50, 20)
+        self.bookmarks = bookmarks
 
         controlNetLayout = QGridLayout(self)
         controlNetLayout.addWidget(self.controlNetPromptInput, 1, 0, 1, 2)
@@ -41,7 +44,6 @@ class ControlNet(QGroupBox):
         controlNetLayout.addWidget(self.bookMarkSelectionToSendControlNet, 3, 0, 1, 2)
         
         for i, f in enumerate(os.listdir('bookmarks')):
-            print(f)
             self.bookMarkSelectionToSendControlNet.addItem(f)
 
         self.controlNetSlider.setRange(1,100)
@@ -61,27 +63,32 @@ class ControlNet(QGroupBox):
     		"scale":scale_input}
             )
         img_data = requests.get(output[-1]).content
-        with open('./controlnet_response_' + image_input, 'wb') as handler:
+        print(image_input)
+
+        # stick prompt in here somehow
+
+        with open('./controlnet_responses/' + prompt_input + '.jpg', 'wb') as handler:
             handler.write(img_data)
-        return img_data
+        return prompt_input
     
     def add_group_box(self):
-        message = self.controlNetPromptInput.text()
+        prompt = self.controlNetPromptInput.text()
         self.controlNetPromptInput.clear()
-        img = self.bookMarkSelectionToSendControlNet.currentText()
+        img_fname = self.bookMarkSelectionToSendControlNet.currentText()
         value = 30*(self.controlNetValue.value())/100
-        response = self.control_Net(img,message,value)
-        print(response)
+        response_fname = self.control_Net(img_fname,prompt,value)
+
         # Create a new QGroupBox
         group_box = QGroupBox(self)
-        group_box.setTitle(message)
+        group_box.setTitle(prompt)
 
         # Create a QHBoxLayout for the group box
         layout = QHBoxLayout(group_box)
         group_box.setLayout(layout)
 
         # Load and display the image
-        self.load_image(group_box, ".jpg", desired_width=100, desired_height=100)
+        print(response_fname)
+        self.load_image(group_box, './controlnet_responses/' + response_fname + '.jpg', desired_width=100, desired_height=100)
 
         # Create a QPushButton
         bookMarkSelectionToSendControlNet = QPushButton("Book Mark")
@@ -89,7 +96,7 @@ class ControlNet(QGroupBox):
         layout.addWidget(bookMarkSelectionToSendControlNet)
 
         # Connect the button's clicked signal to the slot function
-        bookMarkSelectionToSendControlNet.clicked.connect(self.bookmark_clicked)
+        bookMarkSelectionToSendControlNet.clicked.connect(self.bookmark_clicked(response_fname))
         
         # Create a QListWidgetItem and set the QGroupBox as its widget
         item = QListWidgetItem(self.list_widget)
@@ -114,5 +121,14 @@ class ControlNet(QGroupBox):
         layout = group_box.layout()
         layout.addWidget(label)
 
-    def bookmark_clicked(self):
-        print("working")
+    def bookmark_clicked(self, fname):
+
+        def add_to_bookmarks():
+            # add to folder bookmarks
+            print(fname)
+            shutil.copyfile('./controlnet_responses/' + fname + ".jpg", './bookmarks/' + fname + ".jpg")
+            self.bookmarks.add_group_box(fname)
+        self.bookMarkSelectionToSendControlNet.addItem(fname)
+        return add_to_bookmarks
+
+

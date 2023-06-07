@@ -40,9 +40,9 @@ class FashionCycle:
         self.chatBox.setMaximumWidth(300)
         self.pallete = Pallete()
         self.pallete.setMaximumWidth(350)
-        self.controlNet = ControlNet()
+        self.controlNet = ControlNet(self.bookMark)
         self.controlNet.setMaximumWidth(300)
-        self.canvas = Canvas()
+        self.canvas = Canvas(self.bookMark)
 
 fashionCycle = FashionCycle()
 
