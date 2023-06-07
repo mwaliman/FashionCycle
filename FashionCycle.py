@@ -34,9 +34,9 @@ fashionCycle = FashionCycle()
 # Add group boxes to the layout
 layout.addWidget(fashionCycle.chatBox, 0, 0, 8, 1)
 layout.addWidget(fashionCycle.bookMark, 0, 1, 2, 3)
-layout.addWidget(fashionCycle.pallete, 7, 2, 1, 1)
 layout.addWidget(fashionCycle.controlNet, 0, 4, 8, 1)
 layout.addWidget(fashionCycle.canvas, 2, 1, 6, 3)
+layout.addWidget(fashionCycle.pallete, 7, 2, 1, 1)
 
 window.setLayout(layout)
 window.show()
