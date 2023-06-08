@@ -53,7 +53,8 @@ class ControlNet(QGroupBox):
         for i, f in enumerate(os.listdir('bookmarks')):
             self.bookMarkSelectionToSendControlNet.addItem(f)
 
-        self.controlNetSlider.setRange(50,100)
+        self.controlNetSlider.setRange(0,100)
+        self.controlNetSlider.setValue(50)
         self.controlNetSlider.valueChanged.connect(self.update_label)
         bookmarks.custom_signal.connect(self.handle_custom_signal)
         self.bookMarkSelectionToSendControlNet.currentIndexChanged.connect(self.selected)
@@ -111,7 +112,7 @@ class ControlNet(QGroupBox):
             self.load_image(group_box, './controlnet_responses/' + response_fname + '.jpg', desired_width=100, desired_height=100)
 
             # Create a QPushButton
-            bookMarkSelectionToSendControlNet = QPushButton("Book Mark")
+            bookMarkSelectionToSendControlNet = QPushButton("📌")
             bookMarkSelectionToSendControlNet.setFixedSize(100, 30)
             layout.addWidget(bookMarkSelectionToSendControlNet)
 
