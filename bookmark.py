@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QScrollBar, QListView, QAbstractItemView, QListWidgetItem, QMainWindow, QVBoxLayout, QLCDNumber, QLineEdit, QGridLayout, QWidget, QAbstractButton, QPushButton, QLabel, QListWidget,QHBoxLayout, QComboBox, QTextEdit, QSlider , QGroupBox
-from PyQt5.QtGui import QPainter, QColor, QStandardItemModel, QStandardItem, QPen, QPainterPath, QImage, QPixmap, QIcon
-from PyQt5.QtCore import QSize, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
+from PyQt5.QtGui import QPainter, QColor, QStandardItemModel, QStandardItem, QPen, QPainterPath, QImage, QPixmap, QIcon, QFont
+from PyQt5.QtCore import QSize, pyqtSignal, Qt, QPoint, QRect, QAbstractListModel, QModelIndex, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 import sketch
 import sys
@@ -15,8 +15,9 @@ import replicate
 #from CanvasWidget import CanvasWidget
 
 class Bookmark(QGroupBox):
+    custom_signal = pyqtSignal(str)
     def __init__(self):
-        super().__init__("bookMark")
+        super().__init__("Favorites 📌")
         self.bookMarkLIstOfImages = QComboBox()
         self.canvas = None
 
@@ -46,7 +47,7 @@ class Bookmark(QGroupBox):
         bookMarkLayout.addWidget(list_view)
         image_paths = [f for f in os.listdir('./bookmarks') if 'jpg' in f]
         for f in image_paths:
-            print(f)
+            #print(f)
             self.add_group_box(f.split('.')[0])
         
         
@@ -61,18 +62,22 @@ class Bookmark(QGroupBox):
         
         # Load and display the image
         if image_boolean:
-            self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=100, desired_height=100)
+            self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=80, desired_height=80)
         else:
-            self.load_image(group_box, "./sketches/"+fname+".jpg", desired_width=100, desired_height=100)
+            self.load_image(group_box, "./sketches/"+fname+".jpg", desired_width=80, desired_height=80)
 
         # Create a QPushButton for remove
-        remove_button = QPushButton("Remove")
+        remove_button = QPushButton("❌")
+        remove_button.setFixedSize(35,20)
+        remove_button.clicked.connect(lambda: self.removes_the_image_from_folder("./bookmarks/"+fname+".jpg"))
+        remove_button.clicked.connect(lambda: self.emit_Delete_signal())
         remove_button.clicked.connect(lambda: self.remove_group_box(group_box))
-        layout.addWidget(remove_button, 0, 1)
+        layout.addWidget(remove_button, 2, 0)
         
-        bookMarkDisplayOnCanvasButton = QPushButton("Edit in Canvas")
+        bookMarkDisplayOnCanvasButton = QPushButton("Edit")
+        bookMarkDisplayOnCanvasButton.setFixedSize(35,20)
         bookMarkDisplayOnCanvasButton.clicked.connect(self.edit_clicked(fname+".jpg"))
-        layout.addWidget(bookMarkDisplayOnCanvasButton, 1, 1)
+        layout.addWidget(bookMarkDisplayOnCanvasButton, 2, 1)
 
         # Add the QGroupBox to the QStandardItemModel
         item = QStandardItem()
@@ -98,7 +103,9 @@ class Bookmark(QGroupBox):
                 self.model.removeRow(index.row())
                 break
             index = self.model.index(index.row() + 1, index.column())
-
+    def emit_Delete_signal(self):
+        self.custom_signal.emit("Deleted")
+    
     def load_image(self, group_box, image_path, desired_width, desired_height):
         # Create a QLabel widget
         label = QLabel(group_box)
@@ -114,9 +121,16 @@ class Bookmark(QGroupBox):
 
         # Add the QLabel to the QHBoxLayout
         layout = group_box.layout()
-        layout.addWidget(label, 0, 0, 2, 1)
+        layout.addWidget(label, 0, 0, 2, 2)
 
     def edit_clicked(self, fname):
         def send_to_canvas():
             self.canvas.load_image(fname)
         return send_to_canvas
+    def removes_the_image_from_folder(self, path):
+        image_path = path
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            print("Image removed successfully.")
+        else:
+            print("Image not found.")
