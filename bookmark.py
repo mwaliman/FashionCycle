@@ -50,7 +50,7 @@ class Bookmark(QGroupBox):
             self.add_group_box(f.split('.')[0])
         
         
-    def add_group_box(self, fname):
+    def add_group_box(self, fname,image_boolean = True):
         # Create a new QGroupBox
         group_box = QGroupBox(self)
         group_box.setTitle(fname)
@@ -60,8 +60,11 @@ class Bookmark(QGroupBox):
         group_box.setLayout(layout)
         
         # Load and display the image
-        self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=100, desired_height=100)
-        
+        if image_boolean:
+            self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=100, desired_height=100)
+        else:
+            self.load_image(group_box, "./sketches/"+fname+".jpg", desired_width=100, desired_height=100)
+
         # Create a QPushButton for remove
         remove_button = QPushButton("Remove")
         remove_button.clicked.connect(lambda: self.remove_group_box(group_box))
@@ -83,7 +86,8 @@ class Bookmark(QGroupBox):
         list_view.setIndexWidget(index, group_box)
 
         # calculate sketch
-        sketch.predict(fname+".jpg",'complex lines')
+        if image_boolean:
+            sketch.predict(fname+".jpg",'complex lines')
 
     def remove_group_box(self, group_box):
         list_view = self.findChild(QListView)
