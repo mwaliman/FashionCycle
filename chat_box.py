@@ -23,13 +23,19 @@ os.makedirs('controlnet_responses', exist_ok=True)
 
 class ChatBox(QGroupBox):
     def __init__(self, bookmarks):
-        super().__init__("chatBox")
+        super().__init__("Inspiration")
         self.chatMessageSend = QPushButton("Generate")
         self.chatMessage = QLineEdit("")
+        self.chatMessage.setPlaceholderText("Describe here...")
         self.bookmarks = bookmarks
-        self.recentReponseImageDisplay = QListView()
-        self.recentReponseImageDisplay.setFixedSize(280,280)
+        self.recentReponseImageDisplay = QLabel("")
+        self.recentReponseImageDisplay.setFixedSize(280, 280)
+        self.recentReponseImageDisplay.setStyleSheet("QLabel { background-color: white; border: 1px solid #444444; }")
 
+        
+        # recentReponseImageDisplayLayout = QHBoxLayout(self.recentReponseImageDisplay)
+        # self.recentReponseImageDisplay.setLayout(recentReponseImageDisplayLayout)
+        
         chatBoxLayout = QGridLayout(self)
         chatBoxLayout.addWidget(self.chatMessage, 1, 0, 1, 3)
         chatBoxLayout.addWidget(self.chatMessageSend, 1, 3)
@@ -63,6 +69,14 @@ class ChatBox(QGroupBox):
             return
         self.chatMessage.clear()
         response = self.generate_chatbot_response(message)
+        #self.load_image(self.recentReponseImageDisplay, response, desired_width=280, desired_height=280)
+        
+        image = QImage(280,280, QImage.Format_RGB32)
+        image.load(response)
+        pixmap = QPixmap.fromImage(image)
+        pixmap = pixmap.scaled(280, 280, Qt.AspectRatioMode.KeepAspectRatio)
+        self.recentReponseImageDisplay.setPixmap(pixmap)
+        
         # Create a new QGroupBox
         group_box = QGroupBox(self)
         group_box.setTitle(message)
@@ -112,5 +126,3 @@ class ChatBox(QGroupBox):
             shutil.copyfile('./chatbot_responses/' + fname + ".jpg", './bookmarks/' + fname + ".jpg")
             self.bookmarks.add_group_box(fname)
         return add_to_bookmarks
-
-        

@@ -28,6 +28,7 @@ from canvas import Canvas
 app = QApplication([])
 window = QWidget()
 window.resize(1200, 800)
+window.setWindowTitle("Fashion Cycle")
 
 layout = QGridLayout(window)
 
@@ -52,6 +53,7 @@ layout.addWidget(fashionCycle.chatBox, 0, 0, 8, 1)
 layout.addWidget(fashionCycle.controlNet, 0, 4, 8, 1)
 layout.addWidget(fashionCycle.canvas, 2, 1, 6, 3)
 layout.addWidget(fashionCycle.pallete, 7, 2, 1, 1)
+
 
 window.setLayout(layout)
 window.show()
