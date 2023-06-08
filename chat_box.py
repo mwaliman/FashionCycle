@@ -89,7 +89,7 @@ class ChatBox(QGroupBox):
         self.load_image(group_box, response, desired_width=100, desired_height=100)
 
         # Create a QPushButton
-        bookMarkSend = QPushButton("Book Mark")
+        bookMarkSend = QPushButton("📌")
         bookMarkSend.setFixedSize(100, 30)
         layout.addWidget(bookMarkSend)
 
