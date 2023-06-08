@@ -31,11 +31,11 @@ class Canvas(QGroupBox):
         self.eraseMode = False
         self.image_path = None
         self.bookmarks = bookmarks
-        self.pallete = Pallete()
+        self.pallete = Pallete(self)
 
     def load_image(self, fname):
-        image_path = './sketches/' + fname
-        image = QImage(image_path)
+        self.image_path = './sketches/' + fname
+        image = QImage(self.image_path)
         scaled_image = image.scaled(self.canvas.size(), Qt.AspectRatioMode.KeepAspectRatio)
         self.canvas = scaled_image.copy()
         self.update()
@@ -76,15 +76,21 @@ class Canvas(QGroupBox):
         self.update()
 
     def save_image(self, filename):
-        self.canvas.save(filename)
+        if self.image_path:
+            self.canvas.save(self.image_path)
+        else:
+            sketches = [f for f in os.listdir('./sketches') if 'sketch' in f]
+            self.canvas.save('./sketches/sketch' + str(len(sketches)) + '.jpg')
 
 class Pallete(QGroupBox):
-    def __init__(self):
+    def __init__(self,canvas):
         super().__init__("pallete")
+        self.canvas = canvas
         self.ThicknessLabel = QLabel("Thickness")
         self.OpaquenessLabel = QLabel("Opaqueness")
         self.Erasing = QPushButton("Erase Mode")
         self.bookMarkSendFromCanvas = QPushButton("Save")
+        self.bookMarkSendFromCanvas.clicked.connect(self.canvas.save_image)
         self.PixelThicknessSliderForPallete = QSlider()
         self.PixelOpaquenessSliderForPallete = QSlider()
         self.PixelThicknessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
@@ -126,4 +132,3 @@ class Pallete(QGroupBox):
         else:
             self.Erasing.setText("Eraser Mode: off")
             erase = "yes"
-    
