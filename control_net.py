@@ -150,7 +150,7 @@ class ControlNet(QGroupBox):
             #print(fname)
             shutil.copyfile('./controlnet_responses/' + fname + ".jpg", './bookmarks/' + fname + ".jpg")
             self.bookmarks.add_group_box(fname)
-        self.bookMarkSelectionToSendControlNet.addItem(fname)
+        self.bookMarkSelectionToSendControlNet.addItem(fname + ".jpg")
         return add_to_bookmarks
 
 
