@@ -17,7 +17,7 @@ import replicate
 class Bookmark(QGroupBox):
     custom_signal = pyqtSignal(str)
     def __init__(self):
-        super().__init__("Favorites 📌")
+        super().__init__("Saved")
         self.bookMarkLIstOfImages = QComboBox()
         self.canvas = None
 
@@ -63,19 +63,19 @@ class Bookmark(QGroupBox):
         layout.setAlignment(Qt.AlignCenter)
         # Load and display the image
         if image_boolean:
-            self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=100, desired_height=100)
+            self.load_image(group_box, "./bookmarks/"+fname+".jpg", desired_width=80, desired_height=80)
         else:
-            self.load_image(group_box, "./sketches/"+fname+".jpg", desired_width=100, desired_height=100)
+            self.load_image(group_box, "./sketches/"+fname+".jpg", desired_width=80, desired_height=80)
 
         # Create a QPushButton for remove
-        remove_button = QPushButton("❌")
+        remove_button = QPushButton("🗑️")
         remove_button.setFixedSize(50,20)
         remove_button.clicked.connect(lambda: self.removes_the_image_from_folder("./bookmarks/"+fname+".jpg"))
         remove_button.clicked.connect(lambda: self.emit_Delete_signal())
         remove_button.clicked.connect(lambda: self.remove_group_box(group_box))
         layout.addWidget(remove_button, 2, 0)
         
-        bookMarkDisplayOnCanvasButton = QPushButton("Edit")
+        bookMarkDisplayOnCanvasButton = QPushButton("🖌️")
         bookMarkDisplayOnCanvasButton.setFixedSize(50,20)
         bookMarkDisplayOnCanvasButton.clicked.connect(self.edit_clicked(fname+".jpg"))
         layout.addWidget(bookMarkDisplayOnCanvasButton, 2, 1)

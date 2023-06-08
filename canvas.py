@@ -92,6 +92,7 @@ class Canvas(QGroupBox):
         else:
             sketches = [f for f in os.listdir('./sketches') if 'sketch' in f]
             self.canvas.save('./sketches/sketch' + str(len(sketches)) + '.jpg')
+            self.canvas.save('./bookmarks/sketch' + str(len(sketches)) + '.jpg')
             self.bookmarks.add_group_box('sketch' + str(len(sketches)),False)
 
     

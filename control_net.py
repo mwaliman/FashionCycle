@@ -67,7 +67,7 @@ class ControlNet(QGroupBox):
 
     def control_Net(self, image_input, prompt_input, scale_input):
         output = replicate.run("jagilley/controlnet-canny:aff48af9c68d162388d230a2ab003f68d2638d88307bdaf1c2f1ac95079c9613",
-        input={"image": open('./bookmarks/' + image_input, "rb"),
+        input={"image": open('./sketches/' + image_input, "rb"),
     		"prompt": prompt_input,
     		"scale":scale_input}
             )
@@ -113,7 +113,7 @@ class ControlNet(QGroupBox):
             self.load_image(group_box, './controlnet_responses/' + response_fname + '.jpg', desired_width=100, desired_height=100)
 
             # Create a QPushButton
-            bookMarkSelectionToSendControlNet = QPushButton("📌")
+            bookMarkSelectionToSendControlNet = QPushButton("Save")
             bookMarkSelectionToSendControlNet.setFixedSize(100, 30)
             layout.addWidget(bookMarkSelectionToSendControlNet)
 
