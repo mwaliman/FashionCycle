@@ -28,7 +28,7 @@ class Canvas(QGroupBox):
         self.setMouseTracking(True)
         self.canvas.fill(Qt.white)
         self.pen_thickness = 1
-        self.pen_opaqueness = 0.1
+        self.pen_opaqueness = 1.0
         self.eraseMode = False
         self.image_path = None
         self.bookmarks = bookmarks
@@ -113,6 +113,7 @@ class Pallete(QGroupBox):
         self.PixelOpaquenessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
         self.PixelOpaquenessSliderForPallete.setFixedSize(80, 20)
         self.PixelOpaquenessSliderForPallete.setRange(10,100)
+        self.PixelOpaquenessSliderForPallete.setValue(100)
         # self.PixelThicknessValueForPallete = QLCDNumber()
         # self.PixelThicknessValueForPallete.setFixedSize(50, 20)
         # self.PixelOpaquenessValueForPallete = QLCDNumber()
