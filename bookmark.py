@@ -55,7 +55,7 @@ class Bookmark(QGroupBox):
         # Create a new QGroupBox
         group_box = QGroupBox(self)
         group_box.setTitle(fname)
-
+    
         # Create a QHBoxLayout for the group box
         layout = QGridLayout(group_box)
         group_box.setLayout(layout)
@@ -90,7 +90,7 @@ class Bookmark(QGroupBox):
         # Add the QGroupBox to the QListView
         list_view = self.findChild(QListView)
         list_view.setIndexWidget(index, group_box)
-
+        self.custom_signal.emit(fname+".jpg")
         # calculate sketch
         if image_boolean:
             sketch.predict(fname+".jpg",'complex lines')

@@ -88,7 +88,8 @@ class ControlNet(QGroupBox):
             self.bookMarkSelectionToSendControlNet.setItemData(0, False)
             for i, f in enumerate(os.listdir('bookmarks')):
                 self.bookMarkSelectionToSendControlNet.addItem(f)
-    
+        else:
+            self.bookMarkSelectionToSendControlNet.addItem(data)
     def add_group_box(self):
         prompt = self.controlNetPromptInput.text()
         self.controlNetPromptInput.clear()

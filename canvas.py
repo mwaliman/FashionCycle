@@ -62,10 +62,10 @@ class Canvas(QGroupBox):
             painter = QPainter(self.canvas)
             pen = QPen(QColor("black" if not self.eraseMode else "white"), self.pen_thickness, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
             pen_color = pen.color()
-            if self.eraseMode:
-                pen_color.setAlphaF(1.0)
-            else:
-                pen_color.setAlphaF(self.pen_opaqueness)
+            # if self.eraseMode:
+                # pen_color.setAlphaF(1.0)
+            # else:
+                # pen_color.setAlphaF(self.pen_opaqueness)
             pen.setColor(pen_color)
             painter.setPen(pen)
             painter.drawLine(self.last_pos, event.pos())
@@ -75,8 +75,8 @@ class Canvas(QGroupBox):
     def set_pen_thickness(self, thickness):
         self.pen_thickness = thickness
         
-    def set_pen_Opaque(self, opaqueness):
-        self.pen_opaqueness = opaqueness/100.0
+    # def set_pen_Opaque(self, opaqueness):
+        # self.pen_opaqueness = opaqueness/100.0
         
     def set_eraser_mode(self):
         print(self.eraseMode)
@@ -100,20 +100,21 @@ class Pallete(QGroupBox):
         super().__init__()
         self.canvas = canvas
         self.ThicknessLabel = QLabel("Stroke")
-        self.OpaquenessLabel = QLabel("Opacity")
+        self.ThicknessLabel.setAlignment(Qt.AlignCenter)
+        # self.OpaquenessLabel = QLabel("Opacity")
         self.Erasing = QPushButton("Eraser: off")
         self.Clearing = QPushButton("Clear")
         self.bookMarkSendFromCanvas = QPushButton("Save")
         self.bookMarkSendFromCanvas.clicked.connect(self.canvas.save_image)
         self.PixelThicknessSliderForPallete = QSlider()
-        self.PixelOpaquenessSliderForPallete = QSlider()
+        # self.PixelOpaquenessSliderForPallete = QSlider()
         self.PixelThicknessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
         self.PixelThicknessSliderForPallete.setFixedSize(80, 20)
         self.PixelThicknessSliderForPallete.setRange(1,10)
-        self.PixelOpaquenessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
-        self.PixelOpaquenessSliderForPallete.setFixedSize(80, 20)
-        self.PixelOpaquenessSliderForPallete.setRange(10,100)
-        self.PixelOpaquenessSliderForPallete.setValue(100)
+        # self.PixelOpaquenessSliderForPallete.setOrientation(Qt.Horizontal)  # Set the slider orientation to horizontal
+        # self.PixelOpaquenessSliderForPallete.setFixedSize(80, 20)
+        # self.PixelOpaquenessSliderForPallete.setRange(10,100)
+        # self.PixelOpaquenessSliderForPallete.setValue(100)
         # self.PixelThicknessValueForPallete = QLCDNumber()
         # self.PixelThicknessValueForPallete.setFixedSize(50, 20)
         # self.PixelOpaquenessValueForPallete = QLCDNumber()
@@ -123,23 +124,24 @@ class Pallete(QGroupBox):
         self.Erasing.raise_()
         self.bookMarkSendFromCanvas.raise_()
         self.PixelThicknessSliderForPallete.raise_()
-        self.PixelOpaquenessSliderForPallete.raise_()
+        # self.PixelOpaquenessSliderForPallete.raise_()
         
         self.click_count = 1
         self.Erasing.clicked.connect(self.eraserMode_change_text)
         self.Erasing.clicked.connect(canvas.set_eraser_mode)
         
         self.PixelThicknessSliderForPallete.valueChanged.connect(self.canvas.set_pen_thickness)
-        self.PixelOpaquenessSliderForPallete.valueChanged.connect(self.canvas.set_pen_Opaque)
+        # self.PixelOpaquenessSliderForPallete.valueChanged.connect(self.canvas.set_pen_Opaque)
         self.Clearing.clicked.connect(self.clear)
         
         palleteLayout = QGridLayout(self)
         palleteLayout.addWidget(self.Erasing, 0, 0, 1, 2)
         palleteLayout.addWidget(self.bookMarkSendFromCanvas, 1, 0, 1, 1)
         palleteLayout.addWidget(self.PixelThicknessSliderForPallete, 0, 3)
-        palleteLayout.addWidget(self.PixelOpaquenessSliderForPallete, 1, 3)
-        palleteLayout.addWidget(self.ThicknessLabel, 0, 5)
-        palleteLayout.addWidget(self.OpaquenessLabel, 1, 5)
+        
+        # palleteLayout.addWidget(self.PixelOpaquenessSliderForPallete, 1, 3)
+        palleteLayout.addWidget(self.ThicknessLabel, 1, 3)
+        # palleteLayout.addWidget(self.OpaquenessLabel, 1, 5)
         palleteLayout.addWidget(self.Clearing, 1, 1, 1, 1)
         # palleteLayout.addWidget(self.PixelThicknessValueForPallete, 0, 3)
         # palleteLayout.addWidget(self.PixelOpaquenessValueForPallete, 1, 3)
